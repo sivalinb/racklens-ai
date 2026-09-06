@@ -1,3 +1,4 @@
+/* oxlint-disable next/no-html-link-for-pages -- Vinext production routing requires full document navigation between routes. */
 import {
   Activity,
   ArrowRight,
@@ -13,7 +14,6 @@ import {
   Wind,
   Zap,
 } from 'lucide-react';
-import Link from 'next/link';
 
 const rackUnits = Array.from({ length: 7 });
 
@@ -46,7 +46,7 @@ export function HomeExperience() {
   return (
     <main className="home-shell">
       <header className="home-nav">
-        <Link className="brand-mark" href="/" aria-label="RackLens AI home">
+        <a className="brand-mark" href="/" aria-label="RackLens AI home">
           <span className="brand-pulse">
             <Activity />
           </span>
@@ -54,15 +54,15 @@ export function HomeExperience() {
             <strong>RackLens</strong>
             <small>AI Reliability Studio</small>
           </div>
-        </Link>
+        </a>
         <nav aria-label="Home navigation">
           <a href="#platform">Platform</a>
           <a href="#workflow">How it works</a>
           <a href="#safety">Safety</a>
         </nav>
-        <Link className="home-nav-cta" href="/studio">
+        <a className="home-nav-cta" href="/studio">
           Launch live studio <ArrowRight />
-        </Link>
+        </a>
       </header>
 
       <section className="home-hero">
@@ -79,9 +79,9 @@ export function HomeExperience() {
             causes to review.
           </p>
           <div className="home-actions">
-            <Link className="home-primary" href="/studio">
+            <a className="home-primary" href="/studio">
               Explore the incident replay <ArrowRight />
-            </Link>
+            </a>
             <a className="home-secondary" href="#workflow">
               See how evidence flows <ChevronRight />
             </a>
@@ -324,9 +324,9 @@ export function HomeExperience() {
           read-only Redfish collection and deliberately implements no production
           hardware writes.
         </p>
-        <Link href="/studio">
+        <a href="/studio">
           Open the reliability studio <ArrowRight />
-        </Link>
+        </a>
       </section>
 
       <footer className="home-footer">

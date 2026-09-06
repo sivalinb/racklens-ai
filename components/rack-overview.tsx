@@ -1,4 +1,5 @@
 'use client';
+/* oxlint-disable next/no-html-link-for-pages -- Vinext production routing requires full document navigation between routes. */
 
 import {
   Activity,
@@ -18,7 +19,6 @@ import {
   Workflow,
   Zap,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -127,7 +127,7 @@ export function RackOverview() {
   return (
     <main className={`site-shell ${running ? 'is-running' : 'is-paused'}`}>
       <header className="topbar">
-        <Link className="brand-mark studio-brand" href="/">
+        <a className="brand-mark studio-brand" href="/">
           <span className="brand-pulse">
             <Activity />
           </span>
@@ -135,9 +135,9 @@ export function RackOverview() {
             <strong>RackLens</strong>
             <small>AI Reliability Studio</small>
           </div>
-        </Link>
+        </a>
         <nav aria-label="Primary navigation">
-          <Link href="/">Home</Link>
+          <a href="/">Home</a>
           <a href="#fleet">Fleet</a>
           <a href="#gpu">GPU fabric</a>
           <a href="#telemetry">Telemetry</a>
