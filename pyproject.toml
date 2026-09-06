@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "racklens-ai"
+version = "0.1.0"
+description = "Evidence-first Redfish and GPU reliability intelligence"
+requires-python = ">=3.11"
+dependencies = ["fastapi>=0.115", "pydantic>=2.9", "uvicorn>=0.30"]
+
+[project.optional-dependencies]
+agent = ["langgraph>=0.3", "opentelemetry-sdk>=1.29"]
+dev = ["pytest>=8.3", "httpx>=0.28"]
+
+[project.scripts]
+racklens = "racklens.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "backend"}
+
+[tool.setuptools.packages.find]
+where = ["backend"]
