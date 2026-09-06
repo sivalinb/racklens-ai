@@ -1,0 +1,27 @@
+name: Quality gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Python unit tests
+        run: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=backend python -m unittest discover -s backend/tests -v
+      - name: Forty-case evaluation
+        run: PYTHONPATH=backend python -m racklens.cli evaluate
+      - name: Install web dependencies
+        run: npm ci
+      - name: Production web build
+        run: npm run build
