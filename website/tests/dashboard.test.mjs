@@ -53,6 +53,13 @@ test('rack floor includes operational airflow and top-of-rack context', () => {
   assert.match(css, /@keyframes rackBlink/);
 });
 
+test('cross-route links use reliable document navigation on the public host', () => {
+  assert.doesNotMatch(home, /next\/link/);
+  assert.doesNotMatch(dashboard, /next\/link/);
+  assert.match(home, /href="\/studio"/);
+  assert.match(dashboard, /href="\/"/);
+});
+
 test('safety boundary is explicit', () => {
   assert.match(dashboard, /no hardware action executed/i);
   assert.match(dashboard, /Human review/);
