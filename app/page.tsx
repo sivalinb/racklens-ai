@@ -1,5 +1,5 @@
-import { RackOverview } from '@/components/rack-overview';
+import { HomeExperience } from '@/components/home-experience';
 
 export default function Home() {
-  return <RackOverview />;
+  return <HomeExperience />;
 }

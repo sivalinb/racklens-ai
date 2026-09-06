@@ -12,7 +12,9 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 The dashboard provides:
 
+- Narrative product homepage with an animated rack-to-evidence signal journey
 - Interactive four-rack floor with 32 nodes and 256 simulated GPUs
+- Enlarged rack cabinets with redundant top-of-rack switches, activity LEDs, and inlet-to-exhaust airflow
 - Eight-GPU/NVSwitch topology with moving traffic packets
 - Shared power, thermal, fabric-traffic, and clock timeline
 - Cooling, power-cap, PCIe-degradation, and healthy scenarios
