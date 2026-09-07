@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1e3e0796-cef8-41ed-a91f-fdd330702c3c",
-  "prevId": "e2e13f2a-efcd-4211-a194-85e5b0674dd0",
+  "id": "35cc17ec-09d1-4a39-8281-218ceb601d4d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "ai_traces": {
       "name": "ai_traces",

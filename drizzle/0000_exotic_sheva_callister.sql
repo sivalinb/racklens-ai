@@ -42,7 +42,7 @@ CREATE TABLE `metric_samples` (
 	`attributes_json` text DEFAULT '{}' NOT NULL
 );
 --> statement-breakpoint
-CREATE INDEX `idx_metric_target_time` ON `metric_samples` (`data_center`,`hall`,`row_name`,`rack_id`,`metric_name`,`timestamp_ms`);--> statement-breakpoint
+CREATE INDEX `idx_metric_target_time` ON `metric_samples` (`data_center`,`hall`,`row_name`,`rack_id`,`node_id`,`gpu_id`,`timestamp_ms`);--> statement-breakpoint
 CREATE INDEX `idx_metric_incident` ON `metric_samples` (`incident_id`);--> statement-breakpoint
 CREATE TABLE `telemetry_events` (
 	`id` text PRIMARY KEY NOT NULL,
