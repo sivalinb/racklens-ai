@@ -14,8 +14,12 @@ The browser never receives database or BMC credentials. Redfish BMCs stay on the
 | `GET /api/telemetry/query` | Filtered, downsample-ready time-series data plus source and freshness metadata |
 | `POST /api/telemetry/ingest` | Token-protected batch ingestion, limited to 1–1000 samples |
 | `GET /api/observability/traces` | Persistent AI trace summaries with LangSmith/OTLP correlation fields |
+| `GET /api/evaluations/latest` | Latest local/OCI evaluation result, history, provenance, and connection state |
+| `POST /api/evaluations/ingest` | Token-protected evaluation summary from the OCI evidence plane |
 
 External ingestion is disabled until `RACKLENS_INGEST_TOKEN` is configured in the hosted environment. The public simulator can populate the D1 store without granting any hardware write capability.
+
+When both `CLICKHOUSE_URL` and the hosted URL/token are present, the collector fans each bounded batch to both stores. Use `racklens simulate-telemetry --once` for one full Redfish-shaped rack pass or omit `--once` for a continuous feed.
 
 ## Run the ClickHouse product stack
 
@@ -80,3 +84,5 @@ Authoritative references:
 - Managed alternative: Grafana Cloud Free is the simplest zero-operations destination for bounded metrics, logs, and traces.
 
 Free infrastructure is appropriate for a portfolio demonstration, not a production SLA. A production rollout still needs private networking, secrets rotation, TLS validation, backups, retention policy, tenant authorization, audit logging, capacity testing, and an incident recovery plan.
+
+The checked-in [OCI Terraform and runbook](../infra/oci/README.md) provision the Always Free-shaped VM, Bastion, private Object Storage evidence bucket, instance-principal policy, custom evaluation metrics, and budget alerts without placing secrets in Terraform state.

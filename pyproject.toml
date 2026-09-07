@@ -18,6 +18,7 @@ observability = [
   "opentelemetry-exporter-otlp-proto-http>=1.29",
   "opentelemetry-instrumentation-fastapi>=0.50b0",
 ]
+oci = ["oci>=2.160"]
 training = [
   "accelerate>=1.0",
   "bitsandbytes>=0.45",

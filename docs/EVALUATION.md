@@ -16,6 +16,15 @@ RackLens uses a frozen scenario family rather than claiming universal diagnostic
 
 Each scenario is executed with ten deterministic step/seed variations for 70 total cases.
 
+`racklens evaluate --output-dir .racklens/evaluations` writes a complete JSON artifact and one JSONL row per case. On OCI, the daily timer uploads the full JSON to a private Object Storage bucket, posts the aggregate metrics to the `racklens_ai` OCI Monitoring namespace, and sends the same bounded summary to `/api/evaluations/ingest`. The public `/cloud-lab` page links the data source and labels local versus OCI evidence.
+
+```bash
+racklens evaluate
+racklens evaluate --publish-oci --publish-hosted
+```
+
+The publish flags require an OCI instance principal and environment values documented in [the OCI deployment guide](../infra/oci/README.md).
+
 ## Release gates
 
 - Top cause matches the golden incident family

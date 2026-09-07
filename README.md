@@ -10,6 +10,8 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 **AI observability:** [racklens-ai.siva-babu.chatgpt.site/ai-observability](https://racklens-ai.siva-babu.chatgpt.site/ai-observability)
 
+**OCI reliability lab:** [racklens-ai.siva-babu.chatgpt.site/cloud-lab](https://racklens-ai.siva-babu.chatgpt.site/cloud-lab)
+
 > The public website persists live Redfish-shaped demo telemetry and AI traces in a server-side time-series store, with an explicit replay fallback. The Python edge service can collect from an authorized Redfish endpoint and send batches to ClickHouse or the hosted ingestion API. No Redfish write operation is implemented.
 
 ## Product experience
@@ -37,6 +39,9 @@ The dashboard provides:
 - Persistent hosted telemetry APIs at `/api/telemetry/query` and
   `/api/observability/traces`, with freshness, source mode, and safe fallback
 - Token-protected `/api/telemetry/ingest` batches for an authorized edge collector
+- Source-linked `/cloud-lab` scorecard plus token-protected evaluation registry APIs
+- Terraform-managed OCI Always Free evidence plane with Bastion, private Object Storage,
+  instance principals, ClickHouse, Grafana, and nightly regression evaluation
 - ClickHouse, OpenTelemetry Collector, and Grafana Compose stack for a production-shaped lab
 - 42 selected-target Redfish and OEM measurements with searchable provenance,
   legends, thresholds, heatmaps, events, and status rollups
@@ -91,6 +96,7 @@ racklens evaluate
 racklens model-ops
 racklens build-training-dataset training-data
 racklens collect-redfish --interval 30
+racklens simulate-telemetry --once
 uvicorn racklens.api:app --reload
 ```
 
@@ -134,6 +140,8 @@ npm run build
 | `GET /api/model-ops`                   | Adapter configuration and release gate |
 | `GET /api/telemetry/query`             | Query normalized stored measurements   |
 | `POST /api/telemetry/ingest`           | Ingest a bounded metric batch           |
+| `GET /api/evaluations/latest`          | Evaluation evidence and cloud status    |
+| `POST /api/evaluations/ingest`         | Ingest a signed OCI evaluation summary  |
 | `GET /api/fleet/{scenario}`            | Complete Redfish-shaped fleet snapshot |
 | `GET /api/events/{scenario}`           | Server-Sent Events telemetry replay    |
 | `POST /api/investigations/{scenario}`  | Evidence-first investigation           |
@@ -183,3 +191,5 @@ The optional training stack is installed with `pip install -e '.[training]'`. Th
 - [LangSmith observability concepts](https://docs.langchain.com/langsmith/observability-concepts)
 
 See [Live telemetry and free-cloud deployment](docs/LIVE_TELEMETRY.md) for the complete ClickHouse, OpenTelemetry, Grafana, hosted ingestion, and LangSmith setup.
+
+To deploy the private evidence plane from your OCI account, follow the [OCI Always Free runbook](infra/oci/README.md). The Terraform module needs only your tenancy OCID, region, public SSH key, current `/32` IP, and alert email; never provide a password, private key, or API token.

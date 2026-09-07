@@ -382,6 +382,7 @@ export function LangSmithObservabilityDashboard() {
         <nav aria-label="AI observability navigation">
           <a href="/dashboard">Redfish Dashboard</a>
           <a href="/studio">3D Studio</a>
+          <a href="/cloud-lab">OCI Cloud Lab</a>
           <a href="/platform">Product Lab</a>
           <button aria-label="Notifications">
             <Bell />

@@ -1,0 +1,16 @@
+#cloud-config
+package_update: true
+packages:
+  - dnf-utils
+  - git
+  - jq
+
+runcmd:
+  - dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  - dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - systemctl enable --now docker
+  - git clone --branch ${repository_ref} --depth 1 ${repository_url} /opt/racklens
+  - chmod +x /opt/racklens/infra/oci/scripts/*.sh
+  - /opt/racklens/infra/oci/scripts/bootstrap.sh
+
+final_message: "RackLens cloud-init complete. Configure secrets through an OCI Bastion SSH session."

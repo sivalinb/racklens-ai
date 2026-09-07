@@ -1,13 +1,17 @@
 import unittest
+import json
 from datetime import UTC, datetime
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from racklens.agent import ReliabilityAgent
 from racklens.capabilities import capability_catalog, capability_summary
+from racklens.collector import SimulatorTelemetryCollector
+from racklens.evaluation import EXPECTED_TOP_CAUSES, publish_hosted, run_evaluation
 from racklens.knowledge import LocalHybridRetriever
 from racklens.simulator import RackSimulator, SCENARIOS
 from racklens.training import build_training_examples, export_training_dataset, model_ops_manifest, train_adapter
-from racklens.telemetry import MetricSample, SQLiteTelemetryStore, TelemetryTarget
+from racklens.telemetry import CompositeTelemetryStore, MetricSample, SQLiteTelemetryStore, TelemetryTarget
 
 
 class SimulatorTests(unittest.TestCase):
@@ -121,6 +125,71 @@ class TelemetryStoreTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["metric_name"], "thermal.inlet_c")
             self.assertEqual(rows[0]["trace_id"], "tr_test")
+
+    def test_composite_store_fans_out_and_returns_common_accepted_count(self):
+        class Sink:
+            def __init__(self, accepted):
+                self.accepted = accepted
+                self.calls = 0
+
+            def insert_metrics(self, samples):
+                self.calls += 1
+                return min(len(samples), self.accepted)
+
+            def query_metrics(self, target, minutes=15):
+                return []
+
+        first, second = Sink(2), Sink(1)
+        store = CompositeTelemetryStore([first, second])
+        sample = MetricSample(
+            datetime.now(UTC), "gpu.utilization_pct", 92, "%", "/redfish/v1", TelemetryTarget()
+        )
+        self.assertEqual(store.insert_metrics([sample, sample]), 1)
+        self.assertEqual((first.calls, second.calls), (1, 1))
+
+    def test_simulator_collector_emits_redfish_shaped_gpu_and_facility_metrics(self):
+        with TemporaryDirectory() as directory:
+            store = SQLiteTelemetryStore(f"{directory}/telemetry.db")
+            result = SimulatorTelemetryCollector(store).collect_once("cooling_imbalance")
+            self.assertEqual(result["samples_accepted"], 2816)
+            self.assertFalse(result["production_writes"])
+            rows = store.connection.execute(
+                "SELECT DISTINCT metric_name, source_uri FROM metric_samples"
+            ).fetchall()
+            names = {row["metric_name"] for row in rows}
+            self.assertTrue({"rack.power_kw", "thermal.inlet_c", "gpu.utilization_pct"} <= names)
+            self.assertTrue(all(row["source_uri"].startswith("/redfish/") for row in rows))
+
+
+class EvaluationTests(unittest.TestCase):
+    def test_regression_suite_writes_a_complete_auditable_artifact(self):
+        with TemporaryDirectory() as directory:
+            summary, cases = run_evaluation(directory)
+            self.assertEqual(summary.total_cases, len(SCENARIOS) * 10)
+            self.assertEqual(summary.passed_cases, summary.total_cases)
+            self.assertEqual(summary.citation_validity, 1.0)
+            self.assertEqual(summary.unsafe_action_rate, 0.0)
+            self.assertEqual({case.scenario for case in cases}, set(EXPECTED_TOP_CAUSES))
+            self.assertTrue((__import__("pathlib").Path(summary.artifact_uri)).exists())
+
+    def test_hosted_publish_uses_the_token_protected_run_envelope(self):
+        class Response:
+            status = 202
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+        with TemporaryDirectory() as directory:
+            summary, _ = run_evaluation(directory)
+            with patch("racklens.evaluation.urlopen", return_value=Response()) as request_call:
+                publish_hosted(summary, "https://racklens.example", "secret")
+            request = request_call.call_args.args[0]
+            payload = json.loads(request.data)
+            self.assertEqual(payload["run"]["runId"], summary.id)
+            self.assertEqual(request.headers["X-racklens-ingest-token"], "secret")
 
 
 if __name__ == "__main__":

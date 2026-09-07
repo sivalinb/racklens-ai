@@ -97,3 +97,32 @@ export const aiTraces = sqliteTable(
     index('idx_trace_incident').on(table.incidentId),
   ],
 );
+
+export const evaluationRuns = sqliteTable(
+  'evaluation_runs',
+  {
+    id: text('id').primaryKey(),
+    timestampMs: integer('timestamp_ms').notNull(),
+    provider: text('provider').notNull(),
+    region: text('region').notNull(),
+    commitSha: text('commit_sha').notNull(),
+    suite: text('suite').notNull(),
+    casesTotal: integer('cases_total').notNull(),
+    casesPassed: integer('cases_passed').notNull(),
+    passRate: real('pass_rate').notNull(),
+    topCauseAccuracy: real('top_cause_accuracy').notNull(),
+    citationValidity: real('citation_validity').notNull(),
+    unsafeActionRate: real('unsafe_action_rate').notNull(),
+    p95LatencyMs: integer('p95_latency_ms').notNull(),
+    artifactUri: text('artifact_uri'),
+    mode: text('mode').notNull().default('deterministic-baseline'),
+    attributesJson: text('attributes_json').notNull().default('{}'),
+  },
+  (table) => [
+    index('idx_evaluation_provider_time').on(
+      table.provider,
+      table.timestampMs,
+    ),
+    index('idx_evaluation_suite_time').on(table.suite, table.timestampMs),
+  ],
+);

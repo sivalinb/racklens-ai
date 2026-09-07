@@ -245,27 +245,46 @@ class HostedTelemetrySink:
     def insert_metrics(self, samples: list[MetricSample]) -> int:
         if not samples:
             return 0
-        request = Request(
-            self.endpoint,
-            data=json.dumps({"samples": [sample.hosted_row() for sample in samples]}).encode(),
-            headers={
-                "Content-Type": "application/json",
-                "X-RackLens-Ingest-Token": self.token,
-            },
-            method="POST",
-        )
-        with urlopen(request, timeout=20) as response:
-            payload = json.loads(response.read())
-        return int(payload["accepted"])
+        accepted = 0
+        for start in range(0, len(samples), 500):
+            chunk = samples[start : start + 500]
+            request = Request(
+                self.endpoint,
+                data=json.dumps({"samples": [sample.hosted_row() for sample in chunk]}).encode(),
+                headers={
+                    "Content-Type": "application/json",
+                    "X-RackLens-Ingest-Token": self.token,
+                    "User-Agent": "racklens-edge/0.1",
+                },
+                method="POST",
+            )
+            with urlopen(request, timeout=20) as response:
+                payload = json.loads(response.read())
+            accepted += int(payload["accepted"])
+        return accepted
 
     def query_metrics(self, target: TelemetryTarget, minutes: int = 15) -> list[dict]:
         raise NotImplementedError("HostedTelemetrySink is write-only")
 
 
+class CompositeTelemetryStore:
+    """Fans batches out to local ClickHouse and the hosted proof plane."""
+
+    def __init__(self, stores: list[TelemetryStore]):
+        if not stores:
+            raise ValueError("at least one telemetry store is required")
+        self.stores = stores
+
+    def insert_metrics(self, samples: list[MetricSample]) -> int:
+        accepted = [store.insert_metrics(samples) for store in self.stores]
+        return min(accepted, default=0)
+
+    def query_metrics(self, target: TelemetryTarget, minutes: int = 15) -> list[dict]:
+        return self.stores[0].query_metrics(target, minutes)
+
+
 def telemetry_store_from_env() -> TelemetryStore:
-    if endpoint := os.getenv("RACKLENS_HOSTED_INGEST_URL"):
-        token = os.environ["RACKLENS_INGEST_TOKEN"]
-        return HostedTelemetrySink(endpoint, token)
+    stores: list[TelemetryStore] = []
     if url := os.getenv("CLICKHOUSE_URL"):
         store = ClickHouseHTTPStore(
             url,
@@ -274,5 +293,11 @@ def telemetry_store_from_env() -> TelemetryStore:
             os.getenv("CLICKHOUSE_DATABASE", "racklens"),
         )
         store.ensure_schema()
-        return store
+        stores.append(store)
+    if endpoint := os.getenv("RACKLENS_HOSTED_INGEST_URL"):
+        token = os.getenv("RACKLENS_INGEST_TOKEN")
+        if token:
+            stores.append(HostedTelemetrySink(endpoint, token))
+    if stores:
+        return stores[0] if len(stores) == 1 else CompositeTelemetryStore(stores)
     return SQLiteTelemetryStore(os.getenv("RACKLENS_SQLITE_PATH", ".racklens/telemetry.db"))

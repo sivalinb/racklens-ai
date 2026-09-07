@@ -1,0 +1,16 @@
+[Unit]
+Description=RackLens OCI observability stack
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/racklens
+ExecStart=/usr/bin/docker compose --env-file /etc/racklens/racklens.env -f infra/docker-compose.yml -f infra/docker-compose.oci.yml up -d --build clickhouse otel-collector grafana api edge-collector
+ExecStop=/usr/bin/docker compose --env-file /etc/racklens/racklens.env -f infra/docker-compose.yml -f infra/docker-compose.oci.yml down
+TimeoutStartSec=900
+
+[Install]
+WantedBy=multi-user.target

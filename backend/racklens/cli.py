@@ -6,26 +6,12 @@ import os
 
 from .agent import ReliabilityAgent
 from .capabilities import capability_catalog, capability_summary
-from .simulator import RackSimulator, SCENARIOS
-from .training import export_training_dataset, model_ops_manifest, train_adapter
-from .collector import RedfishTelemetryCollector
+from .collector import RedfishTelemetryCollector, SimulatorTelemetryCollector
+from .evaluation import OCIArtifactPublisher, publish_hosted, run_evaluation
 from .redfish import RedfishClient
+from .simulator import RackSimulator, SCENARIOS
 from .telemetry import telemetry_store_from_env
-
-
-def evaluate() -> int:
-    simulator, agent = RackSimulator(), ReliabilityAgent()
-    passed = 0
-    for scenario in SCENARIOS:
-        for seed in range(10):
-            result = agent.investigate(RackSimulator(seed).snapshot(scenario, seed % 5))
-            valid_ids = {e.id for e in result.evidence}
-            valid = len(result.hypotheses) == 3 and all(set(h.evidence_ids) <= valid_ids for h in result.hypotheses) and result.status == "awaiting_review"
-            passed += int(valid)
-            print(json.dumps({"scenario": scenario, "case": seed + 1, "passed": valid, "top": result.hypotheses[0].title}))
-    total = len(SCENARIOS) * 10
-    print(f"summary: {passed}/{total} passed")
-    return 0 if passed == total else 1
+from .training import export_training_dataset, model_ops_manifest, train_adapter
 
 
 def main() -> None:
@@ -33,7 +19,10 @@ def main() -> None:
     sub = parser.add_subparsers(dest="command", required=True)
     investigate = sub.add_parser("investigate")
     investigate.add_argument("scenario", choices=SCENARIOS)
-    sub.add_parser("evaluate")
+    evaluation = sub.add_parser("evaluate")
+    evaluation.add_argument("--output-dir", default=".racklens/evaluations")
+    evaluation.add_argument("--publish-oci", action="store_true")
+    evaluation.add_argument("--publish-hosted", action="store_true")
     sub.add_parser("capabilities")
     dataset = sub.add_parser("build-training-dataset")
     dataset.add_argument("output")
@@ -47,9 +36,40 @@ def main() -> None:
     collect.add_argument("--interval", type=int, default=0, help="poll interval; zero runs once")
     collect.add_argument("--data-center", default="DEN-01")
     collect.add_argument("--insecure", action="store_true", help="development only: disable TLS verification")
+    simulate = sub.add_parser("simulate-telemetry")
+    simulate.add_argument("--interval", type=int, default=30)
+    simulate.add_argument("--once", action="store_true")
+    simulate.add_argument("--scenario", choices=SCENARIOS, default="cooling_imbalance")
+    simulate.add_argument("--data-center", default="OCI-PHX-01")
+    simulate.add_argument("--hall", default="Hall A")
+    simulate.add_argument("--row", default="Row 02")
     args = parser.parse_args()
     if args.command == "evaluate":
-        raise SystemExit(evaluate())
+        summary, _ = run_evaluation(args.output_dir)
+        if args.publish_oci:
+            required = ("OCI_BUCKET_NAME", "OCI_COMPARTMENT_OCID", "OCI_REGION")
+            missing = [name for name in required if not os.getenv(name)]
+            if missing:
+                parser.error(f"missing environment variables: {', '.join(missing)}")
+            publisher = OCIArtifactPublisher(
+                os.environ["OCI_BUCKET_NAME"],
+                os.environ["OCI_COMPARTMENT_OCID"],
+                os.environ["OCI_REGION"],
+            )
+            artifact_uri = publisher.publish(summary, summary.artifact_uri)
+            summary = type(summary)(**{**summary.__dict__, "artifact_uri": artifact_uri})
+        if args.publish_hosted:
+            required = ("RACKLENS_HOSTED_INGEST_URL", "RACKLENS_INGEST_TOKEN")
+            missing = [name for name in required if not os.getenv(name)]
+            if missing:
+                parser.error(f"missing environment variables: {', '.join(missing)}")
+            publish_hosted(
+                summary,
+                os.environ["RACKLENS_HOSTED_INGEST_URL"],
+                os.environ["RACKLENS_INGEST_TOKEN"],
+            )
+        print(json.dumps(summary.hosted_row(), indent=2))
+        raise SystemExit(0 if summary.passed_cases == summary.total_cases else 1)
     if args.command == "capabilities":
         print(json.dumps({"summary": capability_summary(), "capabilities": capability_catalog()}, indent=2))
         return
@@ -78,6 +98,15 @@ def main() -> None:
             collector.run(args.interval)
         else:
             print(json.dumps(collector.collect_once(), indent=2))
+        return
+    if args.command == "simulate-telemetry":
+        collector = SimulatorTelemetryCollector(
+            telemetry_store_from_env(), args.data_center, args.hall, args.row
+        )
+        if args.once:
+            print(json.dumps(collector.collect_once(args.scenario), indent=2))
+        else:
+            collector.run(args.interval, args.scenario)
         return
     result = ReliabilityAgent().investigate(RackSimulator().snapshot(args.scenario))
     print(json.dumps(result.to_dict(), indent=2))

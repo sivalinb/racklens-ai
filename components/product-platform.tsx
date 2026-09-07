@@ -72,6 +72,7 @@ export function ProductPlatform() {
           <a href="/studio">3D Studio</a>
           <a href="/dashboard">Observability</a>
           <a href="/ai-observability">AI Observability</a>
+          <a href="/cloud-lab">OCI Cloud Lab</a>
           <a className="active" href="/platform">
             Product Lab
           </a>

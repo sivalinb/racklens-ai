@@ -374,6 +374,7 @@ export function ObservabilityDashboard() {
         <nav aria-label="Observability navigation">
           <a href="/ai-observability">AI Observability</a>
           <a href="/studio">3D Studio</a>
+          <a href="/cloud-lab">OCI Cloud Lab</a>
           <a href="/platform">Product Lab</a>
           <button aria-label="Notifications">
             <Bell />

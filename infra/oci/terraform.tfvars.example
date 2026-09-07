@@ -1,0 +1,11 @@
+tenancy_ocid        = "ocid1.tenancy.oc1..replace"
+region              = "us-phoenix-1"
+ssh_public_key      = "ssh-ed25519 AAAA... racklens-oci"
+operator_cidr       = "203.0.113.4/32"
+budget_alert_email  = "you@example.com"
+
+# Optional: create racklens-lab below an existing compartment instead of tenancy root.
+# parent_compartment_ocid = "ocid1.compartment.oc1..replace"
+
+# If Always Free A1 capacity is unavailable, try another AD index (0, 1, or 2).
+# availability_domain_index = 1

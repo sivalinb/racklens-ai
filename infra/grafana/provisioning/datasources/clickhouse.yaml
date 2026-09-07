@@ -13,6 +13,6 @@ datasources:
       defaultDatabase: racklens
       tlsSkipVerify: true
     secureJsonData:
-      password: racklens-local
+      password: $CLICKHOUSE_PASSWORD
     isDefault: true
     editable: true

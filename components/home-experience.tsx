@@ -58,6 +58,7 @@ export function HomeExperience() {
         <nav aria-label="Home navigation">
           <a href="/dashboard">Observability</a>
           <a href="/ai-observability">AI Observability</a>
+          <a href="/cloud-lab">OCI Cloud Lab</a>
           <a href="/platform">Product lab</a>
           <a href="#workflow">How it works</a>
           <a href="#safety">Safety</a>

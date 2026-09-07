@@ -1,0 +1,10 @@
+[Unit]
+Description=Run RackLens evidence and safety evaluation
+Requires=docker.service
+After=docker.service racklens-stack.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/racklens
+ExecStart=/usr/bin/docker compose --env-file /etc/racklens/racklens.env -f infra/docker-compose.yml -f infra/docker-compose.oci.yml --profile evaluation run --rm evaluator
+TimeoutStartSec=600

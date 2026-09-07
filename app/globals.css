@@ -440,6 +440,682 @@
   }
 }
 
+/* OCI reliability lab */
+.cloud-shell {
+  --cloud-bg: #071013;
+  --cloud-panel: #0d181c;
+  --cloud-line: #20333a;
+  --cloud-cyan: #54d7df;
+  --cloud-amber: #f4a340;
+  min-height: 100vh;
+  color: #dfe8ea;
+  background:
+    radial-gradient(circle at 78% 9%, rgb(84 215 223 / 9%), transparent 24rem),
+    radial-gradient(circle at 9% 32%, rgb(244 163 64 / 7%), transparent 28rem),
+    linear-gradient(#0c171a 1px, transparent 1px),
+    linear-gradient(90deg, #0c171a 1px, transparent 1px),
+    var(--cloud-bg);
+  background-size: auto, auto, 56px 56px, 56px 56px, auto;
+  font-family: var(--font-geist-sans);
+}
+.cloud-nav {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  gap: 28px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--cloud-line);
+  background: rgb(7 16 19 / 91%);
+  backdrop-filter: blur(18px);
+}
+.cloud-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: inherit;
+  text-decoration: none;
+}
+.cloud-brand > span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: #061114;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--cloud-cyan), #62efb9);
+  box-shadow: 0 0 24px rgb(84 215 223 / 18%);
+}
+.cloud-brand svg {
+  width: 20px;
+}
+.cloud-brand div {
+  display: grid;
+}
+.cloud-brand strong {
+  color: #f1f8f9;
+  font-size: 17px;
+}
+.cloud-brand small {
+  color: #779098;
+  font: 600 10px var(--font-geist-mono);
+  letter-spacing: 0.13em;
+}
+.cloud-nav nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-left: auto;
+}
+.cloud-nav nav a {
+  color: #91a4aa;
+  font-size: 13px;
+  text-decoration: none;
+}
+.cloud-nav nav a:hover {
+  color: #eef8fa;
+}
+.cloud-github {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  color: #c8f4f7;
+  font-size: 12px;
+  text-decoration: none;
+  border: 1px solid #2d4c53;
+  border-radius: 6px;
+  background: #102126;
+}
+.cloud-github svg {
+  width: 14px;
+}
+.cloud-hero {
+  display: grid;
+  width: min(1440px, calc(100% - 48px));
+  min-height: 540px;
+  margin: 0 auto;
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+  align-items: center;
+  gap: 68px;
+  padding: 70px 28px 56px;
+}
+.cloud-kicker,
+.cloud-architecture header > span,
+.cloud-week-section header > span,
+.cloud-resource-panel header > span,
+.cloud-proof-panel > span {
+  color: var(--cloud-cyan);
+  font: 700 11px var(--font-geist-mono);
+  letter-spacing: 0.13em;
+}
+.cloud-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.cloud-kicker i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #67e6b5;
+  box-shadow: 0 0 0 5px rgb(103 230 181 / 10%);
+  animation: cloudPulse 2s ease-in-out infinite;
+}
+.cloud-hero-copy h1 {
+  max-width: 760px;
+  margin: 18px 0 20px;
+  color: #f5fbfc;
+  font-size: clamp(42px, 5vw, 72px);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+.cloud-hero-copy > p {
+  max-width: 700px;
+  margin: 0;
+  color: #9eb0b5;
+  font-size: 17px;
+  line-height: 1.65;
+}
+.cloud-hero-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+.cloud-hero-actions a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 15px;
+  color: #eaf7f8;
+  font-size: 13px;
+  text-decoration: none;
+  border: 1px solid #2d454c;
+  border-radius: 6px;
+  background: #102126;
+}
+.cloud-hero-actions a:first-child {
+  color: #071316;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--cloud-cyan), #73e9c0);
+}
+.cloud-hero-actions svg {
+  width: 15px;
+}
+.cloud-guardrails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 25px;
+  color: #82969c;
+  font-size: 12px;
+}
+.cloud-guardrails span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cloud-guardrails svg {
+  width: 14px;
+  color: #67e6b5;
+}
+.cloud-live-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 412px;
+  padding: 20px;
+  border: 1px solid #294047;
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgb(84 215 223 / 8%), transparent 52%),
+    rgb(11 24 28 / 94%);
+  box-shadow: 0 34px 90px rgb(0 0 0 / 34%);
+}
+.cloud-live-card::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgb(84 215 223 / 5%), transparent);
+  transform: translateX(-100%);
+  animation: cloudScan 6s linear infinite;
+}
+.cloud-live-card > header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cloud-live-card > header > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #b7c7ca;
+  font: 700 11px var(--font-geist-mono);
+  letter-spacing: 0.1em;
+}
+.cloud-live-card > header span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.cloud-live-card > header span.connected {
+  background: #67e6b5;
+  box-shadow: 0 0 0 5px rgb(103 230 181 / 10%);
+}
+.cloud-live-card > header span.ready {
+  background: var(--cloud-amber);
+  box-shadow: 0 0 0 5px rgb(244 163 64 / 10%);
+}
+.cloud-live-card button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: #879ba1;
+  border: 1px solid #2a4148;
+  border-radius: 5px;
+  background: #101f23;
+}
+.cloud-live-card button svg {
+  width: 14px;
+}
+.cloud-live-source {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  margin-top: 24px;
+  text-align: center;
+}
+.cloud-live-source span {
+  color: #6f878e;
+  font: 10px var(--font-geist-mono);
+  text-transform: uppercase;
+}
+.cloud-live-source strong {
+  color: #e8f1f2;
+  font-size: 16px;
+}
+.cloud-live-source small {
+  color: #879a9f;
+  font-size: 11px;
+}
+.cloud-score-ring {
+  position: relative;
+  display: grid;
+  width: 166px;
+  height: 166px;
+  margin: 22px auto;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(var(--cloud-cyan) var(--score), #213339 0);
+}
+.cloud-score-ring::before {
+  position: absolute;
+  width: 142px;
+  height: 142px;
+  content: '';
+  border-radius: 50%;
+  background: #0d1a1e;
+}
+.cloud-score-ring div {
+  position: relative;
+  display: grid;
+  text-align: center;
+}
+.cloud-score-ring strong {
+  color: #f1fafa;
+  font: 700 34px var(--font-geist-mono);
+}
+.cloud-score-ring span {
+  color: #718a91;
+  font: 700 9px var(--font-geist-mono);
+  letter-spacing: 0.14em;
+}
+.cloud-live-meta {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #243a40;
+}
+.cloud-live-meta span {
+  display: grid;
+  gap: 3px;
+  padding: 15px 7px 0;
+  color: #74898f;
+  font-size: 10px;
+  text-align: center;
+}
+.cloud-live-meta b {
+  overflow: hidden;
+  color: #bdcdd0;
+  font: 600 11px var(--font-geist-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-metrics {
+  display: grid;
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--cloud-line);
+  border-radius: 10px;
+  background: rgb(11 22 26 / 85%);
+}
+.cloud-metrics article {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  overflow: hidden;
+  padding: 20px;
+  border-right: 1px solid var(--cloud-line);
+}
+.cloud-metrics article:last-child {
+  border-right: 0;
+}
+.cloud-metrics article span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #7d9298;
+  font-size: 12px;
+}
+.cloud-metrics article svg {
+  width: 15px;
+  color: var(--cloud-cyan);
+}
+.cloud-metrics article strong {
+  color: #e8f2f3;
+  font: 650 27px var(--font-geist-mono);
+}
+.cloud-metrics article > i {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cloud-cyan), #67e6b5);
+}
+.cloud-metrics article > i.safe {
+  background: #67e6b5;
+}
+.cloud-architecture,
+.cloud-week-section,
+.cloud-lower-grid {
+  width: min(1440px, calc(100% - 48px));
+  margin: 86px auto 0;
+}
+.cloud-architecture > header,
+.cloud-week-section > header {
+  max-width: 720px;
+}
+.cloud-architecture h2,
+.cloud-week-section h2,
+.cloud-resource-panel h2,
+.cloud-proof-panel h2 {
+  margin: 9px 0;
+  color: #edf6f7;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+.cloud-architecture header p {
+  margin: 0;
+  color: #84999f;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.cloud-flow {
+  display: grid;
+  margin-top: 30px;
+  grid-template-columns: repeat(4, 1fr 34px) 1fr;
+  align-items: center;
+}
+.cloud-flow article {
+  display: grid;
+  min-height: 180px;
+  align-content: start;
+  padding: 18px;
+  border: 1px solid var(--cloud-line);
+  border-radius: 8px;
+  background: rgb(12 25 29 / 90%);
+}
+.cloud-flow article > svg {
+  width: 24px;
+  color: var(--cloud-cyan);
+}
+.cloud-flow article > span {
+  margin-top: 24px;
+  color: #648087;
+  font: 700 9px var(--font-geist-mono);
+  letter-spacing: 0.1em;
+}
+.cloud-flow article strong {
+  margin-top: 5px;
+  color: #dfeaec;
+  font-size: 13px;
+}
+.cloud-flow article small {
+  margin-top: 5px;
+  color: #778d93;
+  font-size: 11px;
+}
+.cloud-flow > i {
+  display: grid;
+  place-items: center;
+  color: #40585f;
+}
+.cloud-flow > i svg {
+  width: 14px;
+}
+.cloud-week-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 27px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.cloud-week-grid article {
+  min-height: 254px;
+  padding: 20px;
+  border: 1px solid var(--cloud-line);
+  border-top: 2px solid var(--cloud-cyan);
+  border-radius: 8px;
+  background: rgb(12 25 29 / 88%);
+}
+.cloud-week-grid article:nth-child(2) {
+  border-top-color: #6be5bc;
+}
+.cloud-week-grid article:nth-child(3) {
+  border-top-color: #b98ae8;
+}
+.cloud-week-grid article:nth-child(4) {
+  border-top-color: var(--cloud-amber);
+}
+.cloud-week-grid article > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cloud-week-grid article > div b {
+  color: #4b656c;
+  font: 700 30px var(--font-geist-mono);
+}
+.cloud-week-grid article > div svg {
+  width: 22px;
+  color: var(--cloud-cyan);
+}
+.cloud-week-grid h3 {
+  margin: 22px 0 9px;
+  color: #e9f2f3;
+  font-size: 17px;
+}
+.cloud-week-grid p {
+  margin: 0;
+  color: #82969c;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.cloud-week-grid article > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  color: #96d9c5;
+  font-size: 11px;
+}
+.cloud-week-grid article > span svg {
+  width: 13px;
+}
+.cloud-lower-grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 80px;
+  grid-template-columns: 1.1fr 0.9fr;
+}
+.cloud-resource-panel,
+.cloud-proof-panel {
+  padding: 24px;
+  border: 1px solid var(--cloud-line);
+  border-radius: 10px;
+  background: rgb(12 25 29 / 90%);
+}
+.cloud-resource-panel > div {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+}
+.cloud-resource-panel article {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  border: 1px solid #21363d;
+  border-radius: 6px;
+  background: #0a1518;
+}
+.cloud-resource-panel article > svg {
+  width: 18px;
+  color: var(--cloud-cyan);
+}
+.cloud-resource-panel article div {
+  display: grid;
+}
+.cloud-resource-panel article strong {
+  color: #d9e5e7;
+  font-size: 13px;
+}
+.cloud-resource-panel article span {
+  color: #71878d;
+  font-size: 11px;
+}
+.cloud-resource-panel article b {
+  color: #a9bec2;
+  font: 600 11px var(--font-geist-mono);
+}
+.cloud-proof-panel ul {
+  display: grid;
+  gap: 13px;
+  margin: 22px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+.cloud-proof-panel li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  color: #9aadb1;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.cloud-proof-panel li svg {
+  width: 15px;
+  color: #67e6b5;
+}
+.cloud-proof-panel > div {
+  display: flex;
+  gap: 10px;
+}
+.cloud-proof-panel a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  color: #c7f1f4;
+  font-size: 11px;
+  text-decoration: none;
+  border: 1px solid #2a444b;
+  border-radius: 5px;
+  background: #102126;
+}
+.cloud-proof-panel a svg {
+  width: 13px;
+}
+.cloud-footer {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 32px;
+  color: #5f777e;
+  font: 10px var(--font-geist-mono);
+  border-top: 1px solid var(--cloud-line);
+  background: #071013;
+}
+.spinning {
+  animation: cloudSpin 0.8s linear infinite;
+}
+@keyframes cloudPulse {
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+@keyframes cloudScan {
+  to { transform: translateX(100%); }
+}
+@keyframes cloudSpin {
+  to { transform: rotate(360deg); }
+}
+@media (max-width: 1120px) {
+  .cloud-nav nav {
+    display: none;
+  }
+  .cloud-github {
+    margin-left: auto;
+  }
+  .cloud-hero {
+    grid-template-columns: 1fr 380px;
+    gap: 34px;
+  }
+  .cloud-flow {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .cloud-flow > i {
+    display: none;
+  }
+  .cloud-week-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .cloud-nav {
+    padding: 0 16px;
+  }
+  .cloud-github {
+    padding: 8px;
+    font-size: 0;
+  }
+  .cloud-hero,
+  .cloud-metrics,
+  .cloud-architecture,
+  .cloud-week-section,
+  .cloud-lower-grid {
+    width: min(100% - 24px, 680px);
+  }
+  .cloud-hero {
+    grid-template-columns: 1fr;
+    padding: 48px 6px 28px;
+  }
+  .cloud-hero-copy h1 {
+    font-size: 43px;
+  }
+  .cloud-hero-actions,
+  .cloud-proof-panel > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .cloud-metrics,
+  .cloud-week-grid,
+  .cloud-lower-grid,
+  .cloud-flow {
+    grid-template-columns: 1fr;
+  }
+  .cloud-metrics article {
+    border-right: 0;
+    border-bottom: 1px solid var(--cloud-line);
+  }
+  .cloud-metrics article:last-child {
+    border-bottom: 0;
+  }
+  .cloud-architecture,
+  .cloud-week-section,
+  .cloud-lower-grid {
+    margin-top: 58px;
+  }
+  .cloud-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-block: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cloud-kicker i,
+  .cloud-live-card::before,
+  .spinning {
+    animation: none;
+  }
+}
+
 /* Dedicated observability workspace */
 .observe-shell {
   min-height: 100vh;

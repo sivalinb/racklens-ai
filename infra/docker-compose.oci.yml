@@ -1,0 +1,108 @@
+services:
+  clickhouse:
+    environment:
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  otel-collector:
+    environment:
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD}
+      RACKLENS_ENVIRONMENT: oci-always-free
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  grafana:
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/oci/Dockerfile
+    entrypoint: ["uvicorn"]
+    command: ["racklens.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      CLICKHOUSE_URL: http://clickhouse:8123
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318/v1/traces
+      RACKLENS_CLOUD_PROVIDER: oci
+      OCI_REGION: ${OCI_REGION:?set OCI_REGION}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+
+  edge-collector:
+    build:
+      context: ..
+      dockerfile: infra/oci/Dockerfile
+    entrypoint: ["/bin/sh", "/app/infra/oci/scripts/run-edge.sh"]
+    environment:
+      COLLECTOR_MODE: ${COLLECTOR_MODE:-simulator}
+      COLLECTOR_INTERVAL_SECONDS: ${COLLECTOR_INTERVAL_SECONDS:-30}
+      RACKLENS_SCENARIO: ${RACKLENS_SCENARIO:-cooling_imbalance}
+      CLICKHOUSE_URL: http://clickhouse:8123
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD}
+      RACKLENS_HOSTED_INGEST_URL: ${RACKLENS_HOSTED_INGEST_URL:-}
+      RACKLENS_INGEST_TOKEN: ${RACKLENS_INGEST_TOKEN:-}
+      RACKLENS_CLOUD_PROVIDER: oci
+      OCI_REGION: ${OCI_REGION:?set OCI_REGION}
+      OCI_INSTANCE_ID: ${OCI_INSTANCE_ID:-instance-principal}
+      REDFISH_BASE_URL: ${REDFISH_BASE_URL:-}
+      REDFISH_USERNAME: ${REDFISH_USERNAME:-}
+      REDFISH_PASSWORD: ${REDFISH_PASSWORD:-}
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  evaluator:
+    build:
+      context: ..
+      dockerfile: infra/oci/Dockerfile
+    command:
+      - evaluate
+      - --output-dir
+      - /var/lib/racklens/evaluations
+      - --publish-oci
+      - --publish-hosted
+    environment:
+      RACKLENS_CLOUD_PROVIDER: oci
+      RACKLENS_COMMIT_SHA: ${RACKLENS_COMMIT_SHA:-unknown}
+      OCI_REGION: ${OCI_REGION:?set OCI_REGION}
+      OCI_BUCKET_NAME: ${OCI_BUCKET_NAME:?set OCI_BUCKET_NAME}
+      OCI_COMPARTMENT_OCID: ${OCI_COMPARTMENT_OCID:?set OCI_COMPARTMENT_OCID}
+      RACKLENS_HOSTED_INGEST_URL: ${RACKLENS_HOSTED_INGEST_URL:?set RACKLENS_HOSTED_INGEST_URL}
+      RACKLENS_INGEST_TOKEN: ${RACKLENS_INGEST_TOKEN:?set RACKLENS_INGEST_TOKEN}
+    volumes:
+      - evaluation-artifacts:/var/lib/racklens/evaluations
+    profiles: ["evaluation"]
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+volumes:
+  evaluation-artifacts:

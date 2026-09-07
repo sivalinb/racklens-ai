@@ -25,6 +25,25 @@ export type LiveSeriesPoint = {
   pollLatency: number;
 };
 
+export type EvaluationRun = {
+  runId: string;
+  timestamp?: number;
+  provider: string;
+  region: string;
+  commitSha: string;
+  suite: string;
+  casesTotal: number;
+  casesPassed: number;
+  passRate: number;
+  topCauseAccuracy: number;
+  citationValidity: number;
+  unsafeActionRate: number;
+  p95LatencyMs: number;
+  artifactUri?: string | null;
+  mode?: string;
+  attributes?: Record<string, unknown>;
+};
+
 type MetricDefinition = {
   name: string;
   field: keyof Omit<LiveSeriesPoint, 'timestamp' | 'time'>;
@@ -430,6 +449,191 @@ export async function ingestTelemetry(
   return {
     accepted: results.length,
     engine: 'Cloudflare D1 time-series store',
+  };
+}
+
+function validateEvaluationRun(run: EvaluationRun) {
+  if (!/^[a-zA-Z0-9._:-]{4,128}$/.test(run.runId))
+    throw new Error('Evaluation run ID failed validation');
+  for (const value of [run.provider, run.region, run.commitSha, run.suite]) {
+    if (!value || value.length > 128)
+      throw new Error('Evaluation metadata failed validation');
+  }
+  if (
+    !Number.isInteger(run.casesTotal) ||
+    !Number.isInteger(run.casesPassed) ||
+    run.casesTotal < 1 ||
+    run.casesTotal > 10_000 ||
+    run.casesPassed < 0 ||
+    run.casesPassed > run.casesTotal
+  )
+    throw new Error('Evaluation case counts failed validation');
+  for (const metric of [
+    run.passRate,
+    run.topCauseAccuracy,
+    run.citationValidity,
+    run.unsafeActionRate,
+  ]) {
+    if (!Number.isFinite(metric) || metric < 0 || metric > 1)
+      throw new Error('Evaluation score failed validation');
+  }
+  if (
+    !Number.isInteger(run.p95LatencyMs) ||
+    run.p95LatencyMs < 0 ||
+    run.p95LatencyMs > 3_600_000
+  )
+    throw new Error('Evaluation latency failed validation');
+  if (
+    run.artifactUri &&
+    !run.artifactUri.startsWith('oci://') &&
+    !run.artifactUri.startsWith('https://')
+  )
+    throw new Error('Evaluation artifact URI failed validation');
+}
+
+function requireIngestToken(request: Request) {
+  const configuredToken = (env as unknown as { RACKLENS_INGEST_TOKEN?: string })
+    .RACKLENS_INGEST_TOKEN;
+  const suppliedToken = request.headers.get('x-racklens-ingest-token');
+  if (!configuredToken)
+    throw new Error(
+      'External ingestion is locked until a hosted ingest token is configured',
+    );
+  if (!suppliedToken || suppliedToken !== configuredToken)
+    throw new Error('Unauthorized evaluation ingestion');
+}
+
+export async function ingestEvaluation(request: Request, run: EvaluationRun) {
+  requireIngestToken(request);
+  validateEvaluationRun(run);
+  const timestamp = run.timestamp ?? Date.now();
+  const db = database();
+  await db
+    .prepare(
+      `INSERT OR REPLACE INTO evaluation_runs
+       (id, timestamp_ms, provider, region, commit_sha, suite, cases_total,
+        cases_passed, pass_rate, top_cause_accuracy, citation_validity,
+        unsafe_action_rate, p95_latency_ms, artifact_uri, mode, attributes_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(
+      run.runId,
+      timestamp,
+      run.provider,
+      run.region,
+      run.commitSha,
+      run.suite,
+      run.casesTotal,
+      run.casesPassed,
+      run.passRate,
+      run.topCauseAccuracy,
+      run.citationValidity,
+      run.unsafeActionRate,
+      run.p95LatencyMs,
+      run.artifactUri ?? null,
+      run.mode ?? 'deterministic-baseline',
+      JSON.stringify(run.attributes ?? {}),
+    )
+    .run();
+  return { accepted: 1, runId: run.runId, engine: 'Cloudflare D1' };
+}
+
+async function ensureEvaluationBaseline(db: D1Database) {
+  const existing = await db
+    .prepare('SELECT COUNT(*) AS total FROM evaluation_runs')
+    .first<{ total: number }>();
+  if ((existing?.total ?? 0) > 0) return;
+  const timestamp = Math.floor(Date.now() / 60_000) * 60_000;
+  await db
+    .prepare(
+      `INSERT OR IGNORE INTO evaluation_runs
+       (id, timestamp_ms, provider, region, commit_sha, suite, cases_total,
+        cases_passed, pass_rate, top_cause_accuracy, citation_validity,
+        unsafe_action_rate, p95_latency_ms, artifact_uri, mode, attributes_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(
+      'racklens-local-baseline-v1',
+      timestamp,
+      'racklens-local-ci',
+      'not-connected',
+      'baseline',
+      'golden-redfish-v1',
+      70,
+      70,
+      1,
+      1,
+      1,
+      0,
+      4,
+      'https://github.com/sivalinb/racklens-ai/blob/main/docs/EVALUATION.md',
+      'deterministic-baseline',
+      JSON.stringify({
+        cloud_connected: false,
+        production_writes: false,
+        source: 'checked-in RackLens golden suite',
+      }),
+    )
+    .run();
+}
+
+export async function queryEvaluationRuns() {
+  const db = database();
+  await ensureEvaluationBaseline(db);
+  const result = await db
+    .prepare(
+      `SELECT id, timestamp_ms, provider, region, commit_sha, suite, cases_total,
+              cases_passed, pass_rate, top_cause_accuracy, citation_validity,
+              unsafe_action_rate, p95_latency_ms, artifact_uri, mode, attributes_json
+       FROM evaluation_runs ORDER BY timestamp_ms DESC LIMIT 30`,
+    )
+    .all<{
+      id: string;
+      timestamp_ms: number;
+      provider: string;
+      region: string;
+      commit_sha: string;
+      suite: string;
+      cases_total: number;
+      cases_passed: number;
+      pass_rate: number;
+      top_cause_accuracy: number;
+      citation_validity: number;
+      unsafe_action_rate: number;
+      p95_latency_ms: number;
+      artifact_uri: string | null;
+      mode: string;
+      attributes_json: string;
+    }>();
+  const runs = result.results.map((row) => ({
+    runId: row.id,
+    timestamp: row.timestamp_ms,
+    provider: row.provider,
+    region: row.region,
+    commitSha: row.commit_sha,
+    suite: row.suite,
+    casesTotal: row.cases_total,
+    casesPassed: row.cases_passed,
+    passRate: row.pass_rate,
+    topCauseAccuracy: row.top_cause_accuracy,
+    citationValidity: row.citation_validity,
+    unsafeActionRate: row.unsafe_action_rate,
+    p95LatencyMs: row.p95_latency_ms,
+    artifactUri: row.artifact_uri,
+    mode: row.mode,
+    attributes: JSON.parse(row.attributes_json) as Record<string, unknown>,
+  }));
+  const latest = runs[0] ?? null;
+  return {
+    source: {
+      engine: 'Cloudflare D1 evaluation registry',
+      api: '/api/evaluations/latest',
+      ingestApi: '/api/evaluations/ingest',
+      persistent: true,
+    },
+    cloudConnected: runs.some((run) => run.provider === 'oci-always-free'),
+    latest,
+    runs,
   };
 }
 

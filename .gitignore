@@ -12,4 +12,9 @@ __pycache__/
 .DS_Store
 coverage/
 *.log
-.racklens/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.plan
