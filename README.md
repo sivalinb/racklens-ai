@@ -8,6 +8,8 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 **Product lab:** [racklens-ai.siva-babu.chatgpt.site/platform](https://racklens-ai.siva-babu.chatgpt.site/platform)
 
+**AI observability:** [racklens-ai.siva-babu.chatgpt.site/ai-observability](https://racklens-ai.siva-babu.chatgpt.site/ai-observability)
+
 > The public website is a deterministic, interactive replay using Redfish-shaped telemetry. The Python service can collect from an authorized Redfish endpoint. No production write operation is implemented.
 
 ## Product experience
@@ -22,6 +24,15 @@ The dashboard provides:
 - Enlarged rack cabinets with redundant top-of-rack switches, activity LEDs, and inlet-to-exhaust airflow
 - Eight-GPU/NVSwitch topology with moving traffic packets
 - Grafana-style Redfish signal explorer that follows the selected rack or GPU
+- Dedicated `/dashboard` observability workspace with data-center, hall, row,
+  rack, node, GPU, time-range, replay, and refresh controls
+- Dedicated `/ai-observability` workspace for LangSmith-shaped traces, nested
+  runs, tool latency, token cost, RAG quality, online evaluations, safety gates,
+  and Redfish-to-AI incident correlation
+- Downloadable, deterministic AI-observability source at
+  `/data/langsmith-observability.json`, linked from every AI dashboard view
+- 42 selected-target Redfish and OEM measurements with searchable provenance,
+  legends, thresholds, heatmaps, events, and status rollups
 - Power, thermal, health, fabric, threshold, source URI, and event-stream panels
 - Shared power, thermal, fabric-traffic, and clock timeline
 - Cooling, power-cap, PCIe, firmware, NVLink, certificate, and healthy scenarios
@@ -45,6 +56,8 @@ Python collector → normalizer → signal correlation
              │                    └─ power / thermal evidence
              ▼
 Local hybrid RAG → three hypotheses → citation critic
+             │                    │
+             │                    └─ LangSmith-shaped traces + feedback
              │
              ▼
 Human review → verification plan (no production write)
@@ -140,6 +153,8 @@ The optional training stack is installed with `pip install -e '.[training]'`. Th
 ## Honest boundaries
 
 - The public site replays deterministic telemetry; it does not connect to a real BMC.
+- The AI observability page uses a clearly labeled LangSmith-shaped replay; it
+  does not claim a live LangSmith connection or send production traces.
 - The simulator uses generic `H100 SXM` labels for a realistic AI-rack demonstration; no vendor-specific management extension is claimed.
 - Recommendations are decision support, not autonomous remediation.
 - Real deployment requires least-privilege BMC accounts, TLS verification, secrets management, network isolation, access control, audit retention, and operator validation.
@@ -152,3 +167,4 @@ The optional training stack is installed with `pip install -e '.[training]'`. Th
 - [Redfish Telemetry white paper](https://www.dmtf.org/sites/default/files/standards/documents/DSP2051_1.0.1.pdf)
 - [DMTF Redfish Interface Emulator](https://github.com/DMTF/Redfish-Interface-Emulator)
 - [DMTF Redfish Service Validator](https://github.com/DMTF/Redfish-Service-Validator)
+- [LangSmith observability concepts](https://docs.langchain.com/langsmith/observability-concepts)
