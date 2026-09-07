@@ -24,8 +24,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataCenterTwin } from '@/components/data-center-twin';
 import { GpuTopology } from '@/components/gpu-topology';
+import { SignalDashboard } from '@/components/signal-dashboard';
 import { TelemetryCharts } from '@/components/telemetry-charts';
 import { RACKS, SCENARIOS, type ScenarioKey } from '@/lib/demo-data';
+import type { SignalScope } from '@/lib/redfish-signals';
 
 function RackCard({
   id,
@@ -106,6 +108,8 @@ export function RackOverview() {
   const [running, setRunning] = useState(true);
   const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('cooling');
   const [selectedRack, setSelectedRack] = useState('R02');
+  const [selectedGpu, setSelectedGpu] = useState(3);
+  const [signalScope, setSignalScope] = useState<SignalScope>('rack');
   const [reviewed, setReviewed] = useState(false);
   const [showEvidence, setShowEvidence] = useState(false);
   const scenario = SCENARIOS[scenarioKey];
@@ -139,10 +143,12 @@ export function RackOverview() {
         </a>
         <nav aria-label="Primary navigation">
           <a href="/">Home</a>
+          <a href="/platform">Product lab</a>
           <a href="#digital-twin">Digital twin</a>
           <a href="#fleet">Fleet</a>
           <a href="#gpu">GPU fabric</a>
           <a href="#telemetry">Telemetry</a>
+          <a href="#signals">Signals</a>
           <a href="#architecture">How it works</a>
         </nav>
         <div className="header-actions">
@@ -190,6 +196,7 @@ export function RackOverview() {
               onClick={() => {
                 setScenarioKey(key);
                 setSelectedRack(SCENARIOS[key].rack);
+                setSignalScope('rack');
                 setReviewed(false);
               }}
             >
@@ -289,7 +296,10 @@ export function RackOverview() {
                 load={r.load}
                 warning={r.warning}
                 selected={selectedRack === r.id}
-                onSelect={() => setSelectedRack(r.id)}
+                onSelect={() => {
+                  setSelectedRack(r.id);
+                  setSignalScope('rack');
+                }}
               />
             ))}
           </div>
@@ -456,9 +466,33 @@ export function RackOverview() {
           scenario={scenario}
           scenarioKey={scenarioKey}
           running={running}
+          rackId={selectedRack}
+          selected={selectedGpu}
+          onSelect={(gpu) => {
+            setSelectedGpu(gpu);
+            setSignalScope('gpu');
+          }}
         />
         <TelemetryCharts scenario={scenario} />
       </section>
+
+      <SignalDashboard
+        scenario={scenario}
+        scenarioKey={scenarioKey}
+        running={running}
+        scope={signalScope}
+        selectedRack={selectedRack}
+        selectedGpu={selectedGpu}
+        onScopeChange={setSignalScope}
+        onRackChange={(rack) => {
+          setSelectedRack(rack);
+          setSignalScope('rack');
+        }}
+        onGpuChange={(gpu) => {
+          setSelectedGpu(gpu);
+          setSignalScope('gpu');
+        }}
+      />
 
       <section className="evidence-section" id="evidence">
         <div className="section-heading">
@@ -515,7 +549,7 @@ export function RackOverview() {
           <p>
             The public experience runs a deterministic replay. The repository
             includes the complete Python collector, simulator, retrieval,
-            investigation API and 40-case evaluation.
+            investigation API and 70-case evaluation.
           </p>
         </div>
         <div className="architecture-flow">
@@ -559,7 +593,7 @@ export function RackOverview() {
         </div>
         <div className="quality-strip">
           <span>
-            <strong>40/40</strong> evaluation cases
+            <strong>70/70</strong> evaluation cases
           </span>
           <span>
             <strong>100%</strong> citation validity
