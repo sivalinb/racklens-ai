@@ -1,0 +1,24 @@
+{
+  "generated_by": "racklens.capabilities",
+  "production_writes": false,
+  "summary": {
+    "total": 12,
+    "available": 5,
+    "simulated": 4,
+    "guarded": 3
+  },
+  "capabilities": [
+    { "name": "Systems", "mode": "read", "status": "available" },
+    { "name": "Chassis", "mode": "read", "status": "available" },
+    { "name": "Managers", "mode": "read", "status": "available" },
+    { "name": "TelemetryService", "mode": "read", "status": "simulated" },
+    { "name": "EventService", "mode": "event", "status": "simulated" },
+    { "name": "LogService", "mode": "read", "status": "simulated" },
+    { "name": "UpdateService", "mode": "guarded", "status": "guarded" },
+    { "name": "PCIeDevice", "mode": "read", "status": "available" },
+    { "name": "NetworkAdapter", "mode": "read", "status": "simulated" },
+    { "name": "AccountService", "mode": "read", "status": "available" },
+    { "name": "Reset", "mode": "guarded", "status": "guarded" },
+    { "name": "CompositionService", "mode": "guarded", "status": "guarded" }
+  ]
+}
