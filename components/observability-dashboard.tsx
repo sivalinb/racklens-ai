@@ -499,7 +499,12 @@ export function ObservabilityDashboard() {
           subtitle={`${rack} · Chassis Power · kW`}
           className="panel-wide"
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
             <AreaChart
               data={lineData}
               margin={{ top: 12, right: 18, left: -12, bottom: 0 }}
@@ -567,7 +572,12 @@ export function ObservabilityDashboard() {
           subtitle={`${rack} · Thermal · °C`}
           className="panel-wide"
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
             <LineChart
               data={lineData}
               margin={{ top: 12, right: 18, left: -12, bottom: 0 }}
@@ -630,7 +640,12 @@ export function ObservabilityDashboard() {
           title="GPU temperature"
           subtitle={`${rack}-${node} · all accelerators · °C`}
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
             <BarChart
               data={gpuData}
               margin={{ top: 12, right: 14, left: -14, bottom: 0 }}
@@ -672,7 +687,12 @@ export function ObservabilityDashboard() {
           title="GPU board power"
           subtitle={`${rack}-${node} · OEM MetricReport · W`}
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
             <BarChart
               data={gpuData}
               margin={{ top: 12, right: 14, left: -14, bottom: 0 }}
@@ -715,7 +735,12 @@ export function ObservabilityDashboard() {
           subtitle={`${rack} · ports A/B · Tb/s`}
           className="panel-wide"
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
             <AreaChart
               data={lineData}
               margin={{ top: 12, right: 18, left: -12, bottom: 0 }}
@@ -787,7 +812,12 @@ export function ObservabilityDashboard() {
           title="Cooling control"
           subtitle={`${rack} · fan zone 0 · duty %`}
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
             <LineChart
               data={lineData}
               margin={{ top: 12, right: 18, left: -12, bottom: 0 }}
