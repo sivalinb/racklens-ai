@@ -22,6 +22,10 @@ The dashboard provides:
 - Enlarged rack cabinets with redundant top-of-rack switches, activity LEDs, and inlet-to-exhaust airflow
 - Eight-GPU/NVSwitch topology with moving traffic packets
 - Grafana-style Redfish signal explorer that follows the selected rack or GPU
+- Dedicated `/dashboard` observability workspace with data-center, hall, row,
+  rack, node, GPU, time-range, replay, and refresh controls
+- 42 selected-target Redfish and OEM measurements with searchable provenance,
+  legends, thresholds, heatmaps, events, and status rollups
 - Power, thermal, health, fabric, threshold, source URI, and event-stream panels
 - Shared power, thermal, fabric-traffic, and clock timeline
 - Cooling, power-cap, PCIe, firmware, NVLink, certificate, and healthy scenarios

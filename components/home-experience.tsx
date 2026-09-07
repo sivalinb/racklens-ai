@@ -56,6 +56,7 @@ export function HomeExperience() {
           </div>
         </a>
         <nav aria-label="Home navigation">
+          <a href="/dashboard">Observability</a>
           <a href="/platform">Product lab</a>
           <a href="#workflow">How it works</a>
           <a href="#safety">Safety</a>
