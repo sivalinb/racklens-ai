@@ -144,6 +144,8 @@ export function RackOverview() {
         <nav aria-label="Primary navigation">
           <a href="/">Home</a>
           <a href="/platform">Product lab</a>
+          <a href="/dashboard">Observability</a>
+          <a href="/ai-observability">AI Observability</a>
           <a href="#digital-twin">Digital twin</a>
           <a href="#fleet">Fleet</a>
           <a href="#gpu">GPU fabric</a>
