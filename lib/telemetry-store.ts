@@ -542,6 +542,18 @@ async function ensureEvaluationBaseline(db: D1Database) {
   const existing = await db
     .prepare('SELECT COUNT(*) AS total FROM evaluation_runs')
     .first<{ total: number }>();
+  await db
+    .prepare(
+      `UPDATE evaluation_runs SET commit_sha = ?
+       WHERE id = ? AND provider = ? AND commit_sha != ?`,
+    )
+    .bind(
+      'baseline',
+      'racklens-local-baseline-v1',
+      'racklens-local-ci',
+      'baseline',
+    )
+    .run();
   if ((existing?.total ?? 0) > 0) return;
   const timestamp = Math.floor(Date.now() / 60_000) * 60_000;
   await db
