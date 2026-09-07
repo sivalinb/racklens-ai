@@ -139,6 +139,7 @@ export function RackOverview() {
         </a>
         <nav aria-label="Primary navigation">
           <a href="/">Home</a>
+          <a href="/platform">Product lab</a>
           <a href="#digital-twin">Digital twin</a>
           <a href="#fleet">Fleet</a>
           <a href="#gpu">GPU fabric</a>
@@ -559,7 +560,7 @@ export function RackOverview() {
         </div>
         <div className="quality-strip">
           <span>
-            <strong>40/40</strong> evaluation cases
+            <strong>70/70</strong> evaluation cases
           </span>
           <span>
             <strong>100%</strong> citation validity

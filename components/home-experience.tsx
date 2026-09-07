@@ -56,7 +56,7 @@ export function HomeExperience() {
           </div>
         </a>
         <nav aria-label="Home navigation">
-          <a href="#platform">Platform</a>
+          <a href="/platform">Product lab</a>
           <a href="#workflow">How it works</a>
           <a href="#safety">Safety</a>
         </nav>
@@ -228,7 +228,7 @@ export function HomeExperience() {
           <span>leading indicator found</span>
         </div>
         <div>
-          <strong>40/40</strong>
+          <strong>70/70</strong>
           <span>evaluation cases</span>
         </div>
         <div>
@@ -327,6 +327,9 @@ export function HomeExperience() {
         <a href="/studio">
           Open the reliability studio <ArrowRight />
         </a>
+        <a href="/platform">
+          Explore the five-week product <ArrowRight />
+        </a>
       </section>
 
       <footer className="home-footer">
@@ -340,6 +343,9 @@ export function HomeExperience() {
           </div>
         </div>
         <p>Python-first · Redfish-native · Human-controlled</p>
+        <a href="/platform">
+          Product lab <ChevronRight />
+        </a>
         <a
           href="https://github.com/sivalinb/racklens-ai"
           target="_blank"

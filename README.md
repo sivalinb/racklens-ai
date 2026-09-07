@@ -6,6 +6,8 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 **Live demo:** [racklens-ai.siva-babu.chatgpt.site](https://racklens-ai.siva-babu.chatgpt.site)
 
+**Product lab:** [racklens-ai.siva-babu.chatgpt.site/platform](https://racklens-ai.siva-babu.chatgpt.site/platform)
+
 > The public website is a deterministic, interactive replay using Redfish-shaped telemetry. The Python service can collect from an authorized Redfish endpoint. No production write operation is implemented.
 
 ## Product experience
@@ -13,12 +15,14 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 The dashboard provides:
 
 - Narrative product homepage with an animated rack-to-evidence signal journey
+- Five-week interactive product lab spanning Redfish, RAG, agents, evaluation, and model specialization
+- Filterable map of 12 Redfish read, event, and guarded-action capabilities
 - Filterable 3D digital twin spanning data center, data hall, row, and rack views
 - Interactive four-rack floor with 32 nodes and 256 simulated GPUs
 - Enlarged rack cabinets with redundant top-of-rack switches, activity LEDs, and inlet-to-exhaust airflow
 - Eight-GPU/NVSwitch topology with moving traffic packets
 - Shared power, thermal, fabric-traffic, and clock timeline
-- Cooling, power-cap, PCIe-degradation, and healthy scenarios
+- Cooling, power-cap, PCIe, firmware, NVLink, certificate, and healthy scenarios
 - Evidence-backed AI investigation with competing hypotheses
 - Human recommendation review and an explicit no-write safety boundary
 - Responsive layout and reduced-motion accessibility
@@ -42,6 +46,9 @@ Local hybrid RAG → three hypotheses → citation critic
              │
              ▼
 Human review → verification plan (no production write)
+             │
+             ▼
+Golden replay lab → operator-reviewed dataset → LoRA / QLoRA release gate
 ```
 
 The default agent is deterministic so evaluation is reproducible. An optional OpenAI-compatible adapter supports Fireworks, Mistral, Ollama/Qwen, or another compatible provider through environment variables.
@@ -54,7 +61,10 @@ source .venv/bin/activate
 pip install -e '.[dev]'
 
 racklens investigate cooling_imbalance
+racklens capabilities
 racklens evaluate
+racklens model-ops
+racklens build-training-dataset training-data
 uvicorn racklens.api:app --reload
 ```
 
@@ -94,6 +104,8 @@ npm run build
 | -------------------------------------- | -------------------------------------- |
 | `GET /api/health`                      | Service and safety status              |
 | `GET /api/scenarios`                   | Available deterministic incidents      |
+| `GET /api/redfish/capabilities`        | Redfish capability and safety matrix   |
+| `GET /api/model-ops`                   | Adapter configuration and release gate |
 | `GET /api/fleet/{scenario}`            | Complete Redfish-shaped fleet snapshot |
 | `GET /api/events/{scenario}`           | Server-Sent Events telemetry replay    |
 | `POST /api/investigations/{scenario}`  | Evidence-first investigation           |
@@ -101,7 +113,7 @@ npm run build
 
 ## Evaluation
 
-`racklens evaluate` runs 40 cases—10 variations across four scenarios. Every case requires:
+`racklens evaluate` runs 70 cases—10 variations across seven scenarios. Every case requires:
 
 - Exactly three ranked hypotheses
 - All evidence citations to resolve to collected evidence
@@ -110,6 +122,18 @@ npm run build
 - No production write
 
 The unit suite additionally validates topology size, scenario isolation, safe human review, source-linked retrieval, and invalid-state handling.
+
+## Week 1–5 product map
+
+| Week | Operator product        | Core technology                                | Release evidence                    |
+| ---- | ----------------------- | ---------------------------------------------- | ----------------------------------- |
+| 1    | Redfish Capability Map  | DMTF resources, discovery, GET-only collection | Schema coverage and safe access     |
+| 2    | Cited Incident Timeline | Hybrid RAG and structured evidence retrieval   | Every claim resolves to evidence    |
+| 3    | Reliability Copilot     | Tool-using investigation stages                | Three ranked causes and human gate  |
+| 4    | Replay & Evaluation Lab | Deterministic scenarios and traces             | 70/70 checked-in golden cases       |
+| 5    | Adapter Foundry         | PEFT LoRA and 4-bit QLoRA                      | Blocked until 200 reviewed examples |
+
+The optional training stack is installed with `pip install -e '.[training]'`. The repository implements dataset export and both training paths, but does not ship or claim a trained adapter. See [Model operations](docs/MODEL_OPS.md).
 
 ## Honest boundaries
 

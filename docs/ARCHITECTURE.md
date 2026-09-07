@@ -16,15 +16,31 @@ Redfish provides the resource model connecting physical systems, chassis, therma
 
 ## Data modes
 
-| Mode | Telemetry | Reasoning | Intended use |
-|---|---|---|---|
-| Deterministic replay | Python simulator | Evidence rules | Public demo, tests, CI |
-| Live read-only | Authorized Redfish service | Evidence rules | Lab and operator validation |
-| Optional model | Replay or live | OpenAI-compatible model | Structured hypothesis comparison |
+| Mode                 | Telemetry                  | Reasoning               | Intended use                     |
+| -------------------- | -------------------------- | ----------------------- | -------------------------------- |
+| Deterministic replay | Python simulator           | Evidence rules          | Public demo, tests, CI           |
+| Live read-only       | Authorized Redfish service | Evidence rules          | Lab and operator validation      |
+| Optional model       | Replay or live             | OpenAI-compatible model | Structured hypothesis comparison |
+
+## Five-layer product architecture
+
+| Layer          | Product surface         | Implementation                                                      |
+| -------------- | ----------------------- | ------------------------------------------------------------------- |
+| Signal         | Redfish Capability Map  | Capability catalog, GET-only client, event replay, simulator        |
+| Evidence       | Cited Incident Timeline | Normalized evidence IDs and hybrid structured/text retrieval        |
+| Decision       | Reliability Copilot     | Collect, retrieve, reason, critic, trace, human-review stages       |
+| Trust          | Replay & Evaluation Lab | Seven scenario families, deterministic variation, citation contract |
+| Specialization | Adapter Foundry         | Versioned data export, LoRA/QLoRA configs, blocked promotion gate   |
+
+The browser product lab mirrors these layers at `/platform`. Static JSON manifests under `public/data/` make the capability and model-ops claims directly inspectable.
 
 ## Safety boundary
 
-The Redfish client exposes `GET` only. `UpdateService`, reset, power control, configuration, and virtual-media writes are outside the implementation. Approval records that a recommendation was reviewed; it does not turn the recommendation into an action.
+The Redfish client exposes `GET` only. UpdateService firmware inventory is readable, while reset, power control, configuration, firmware installation, composition, and virtual-media writes are outside the production connector. Guarded actions appear only as simulated capabilities. Approval records that a recommendation was reviewed; it does not turn the recommendation into an action.
+
+## Model specialization boundary
+
+The Week 5 pipeline exports synthetic, provenance-tagged instruction records into train, validation, and test splits. LoRA and 4-bit QLoRA use PEFT configurations with rank 16, alpha 32, and dropout 0.05. Promotion stays blocked until at least 200 operator-reviewed examples exist and a candidate beats the base-plus-RAG system on held-out accuracy, citation validity, safety, and latency. Synthetic replay data alone cannot clear this gate.
 
 ## Production extension points
 
