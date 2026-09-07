@@ -1,8 +1,11 @@
 import unittest
+from tempfile import TemporaryDirectory
 
 from racklens.agent import ReliabilityAgent
+from racklens.capabilities import capability_catalog, capability_summary
 from racklens.knowledge import LocalHybridRetriever
 from racklens.simulator import RackSimulator, SCENARIOS
+from racklens.training import build_training_examples, export_training_dataset, model_ops_manifest, train_adapter
 
 
 class SimulatorTests(unittest.TestCase):
@@ -20,6 +23,16 @@ class SimulatorTests(unittest.TestCase):
         snapshot = RackSimulator().snapshot("power_cap")
         rack = next(r for r in snapshot.racks if r.id == "R03")
         self.assertLess(rack.inlet_temp_c, 27)
+
+    def test_extended_scenarios_emit_the_expected_redfish_events(self):
+        expected = {
+            "firmware_regression": "UpdateSuccessful",
+            "nvlink_degradation": "InterconnectDegraded",
+            "certificate_drift": "CertificateExpiring",
+        }
+        for scenario, message in expected.items():
+            snapshot = RackSimulator().snapshot(scenario)
+            self.assertTrue(any(message in event.message_id for event in snapshot.events))
 
     def test_unknown_scenario_is_rejected(self):
         with self.assertRaises(ValueError):
@@ -59,6 +72,32 @@ class AgentTests(unittest.TestCase):
         records = LocalHybridRetriever().search("thermal power cooling")
         self.assertGreaterEqual(len(records), 1)
         self.assertTrue(all(record.url.startswith("https://") for record in records))
+
+
+class ProductPlatformTests(unittest.TestCase):
+    def test_capability_catalog_covers_read_events_and_guarded_actions(self):
+        catalog = capability_catalog()
+        self.assertGreaterEqual(len(catalog), 12)
+        self.assertEqual({item["access"] for item in catalog}, {"read", "event", "action"})
+        self.assertFalse(capability_summary()["production_writes"])
+
+    def test_training_dataset_has_versionable_splits_and_provenance(self):
+        examples = build_training_examples(4)
+        self.assertEqual(len(examples), len(SCENARIOS) * 4)
+        self.assertEqual({item["split"] for item in examples}, {"train", "validation", "test"})
+        self.assertTrue(all(item["provenance"] for item in examples))
+        self.assertTrue(all(not item["human_approved"] for item in examples))
+
+    def test_model_ops_keeps_untrained_adapters_blocked(self):
+        manifest = model_ops_manifest()
+        self.assertEqual(manifest["release_gate"]["status"], "blocked")
+        self.assertTrue(all(item["status"] == "not_trained" for item in manifest["experiments"]))
+
+    def test_training_refuses_unapproved_synthetic_data(self):
+        with TemporaryDirectory() as directory:
+            export_training_dataset(directory)
+            with self.assertRaisesRegex(ValueError, "training gate blocked"):
+                train_adapter(directory, f"{directory}/adapter")
 
 
 if __name__ == "__main__":
