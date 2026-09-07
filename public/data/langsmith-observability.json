@@ -1,0 +1,374 @@
+{
+  "metadata": {
+    "source": "Deterministic simulated LangSmith-shaped trace replay",
+    "project": "racklens-reliability-prod",
+    "schema": "LangSmith projects, traces, runs, metadata and feedback",
+    "docs_url": "https://docs.langchain.com/langsmith/observability-concepts",
+    "live_connection": false,
+    "production_writes": false,
+    "sample_window": "2026-09-07T14:21:00Z/2026-09-07T14:32:00Z"
+  },
+  "series": [
+    {
+      "time": "14:21",
+      "traces": 38,
+      "errors": 1,
+      "p50": 1820,
+      "p95": 5240,
+      "p99": 6960,
+      "tokens": 34200,
+      "cost": 1.18,
+      "groundedness": 0.94,
+      "citations": 1.0,
+      "eval_pass": 0.96
+    },
+    {
+      "time": "14:22",
+      "traces": 42,
+      "errors": 1,
+      "p50": 1780,
+      "p95": 5080,
+      "p99": 6720,
+      "tokens": 37800,
+      "cost": 1.29,
+      "groundedness": 0.95,
+      "citations": 1.0,
+      "eval_pass": 0.97
+    },
+    {
+      "time": "14:23",
+      "traces": 41,
+      "errors": 0,
+      "p50": 1750,
+      "p95": 4920,
+      "p99": 6410,
+      "tokens": 36900,
+      "cost": 1.25,
+      "groundedness": 0.95,
+      "citations": 1.0,
+      "eval_pass": 0.97
+    },
+    {
+      "time": "14:24",
+      "traces": 45,
+      "errors": 1,
+      "p50": 1840,
+      "p95": 5360,
+      "p99": 7180,
+      "tokens": 41500,
+      "cost": 1.42,
+      "groundedness": 0.93,
+      "citations": 0.99,
+      "eval_pass": 0.95
+    },
+    {
+      "time": "14:25",
+      "traces": 48,
+      "errors": 1,
+      "p50": 1880,
+      "p95": 5480,
+      "p99": 7340,
+      "tokens": 44800,
+      "cost": 1.54,
+      "groundedness": 0.94,
+      "citations": 1.0,
+      "eval_pass": 0.96
+    },
+    {
+      "time": "14:26",
+      "traces": 52,
+      "errors": 2,
+      "p50": 2010,
+      "p95": 5960,
+      "p99": 7840,
+      "tokens": 49100,
+      "cost": 1.71,
+      "groundedness": 0.92,
+      "citations": 0.98,
+      "eval_pass": 0.94
+    },
+    {
+      "time": "14:27",
+      "traces": 55,
+      "errors": 2,
+      "p50": 2140,
+      "p95": 6280,
+      "p99": 8320,
+      "tokens": 52800,
+      "cost": 1.84,
+      "groundedness": 0.91,
+      "citations": 0.98,
+      "eval_pass": 0.93
+    },
+    {
+      "time": "14:28",
+      "traces": 58,
+      "errors": 3,
+      "p50": 2260,
+      "p95": 6820,
+      "p99": 8940,
+      "tokens": 56200,
+      "cost": 1.96,
+      "groundedness": 0.89,
+      "citations": 0.97,
+      "eval_pass": 0.91
+    },
+    {
+      "time": "14:29",
+      "traces": 61,
+      "errors": 4,
+      "p50": 2380,
+      "p95": 7480,
+      "p99": 9680,
+      "tokens": 60100,
+      "cost": 2.12,
+      "groundedness": 0.87,
+      "citations": 0.96,
+      "eval_pass": 0.89
+    },
+    {
+      "time": "14:30",
+      "traces": 59,
+      "errors": 3,
+      "p50": 2310,
+      "p95": 7160,
+      "p99": 9210,
+      "tokens": 58400,
+      "cost": 2.04,
+      "groundedness": 0.88,
+      "citations": 0.97,
+      "eval_pass": 0.9
+    },
+    {
+      "time": "14:31",
+      "traces": 56,
+      "errors": 2,
+      "p50": 2180,
+      "p95": 6540,
+      "p99": 8460,
+      "tokens": 53900,
+      "cost": 1.87,
+      "groundedness": 0.91,
+      "citations": 0.99,
+      "eval_pass": 0.93
+    },
+    {
+      "time": "14:32",
+      "traces": 54,
+      "errors": 2,
+      "p50": 2090,
+      "p95": 6120,
+      "p99": 7980,
+      "tokens": 51100,
+      "cost": 1.78,
+      "groundedness": 0.92,
+      "citations": 1.0,
+      "eval_pass": 0.95
+    }
+  ],
+  "tools": [
+    { "name": "collect_redfish", "calls": 552, "p95_ms": 184, "errors": 0 },
+    { "name": "align_timeline", "calls": 531, "p95_ms": 312, "errors": 1 },
+    { "name": "retrieve_evidence", "calls": 531, "p95_ms": 428, "errors": 2 },
+    {
+      "name": "generate_hypotheses",
+      "calls": 528,
+      "p95_ms": 2840,
+      "errors": 4
+    },
+    { "name": "verify_citations", "calls": 524, "p95_ms": 742, "errors": 1 },
+    { "name": "human_review_gate", "calls": 524, "p95_ms": 96, "errors": 0 }
+  ],
+  "traces": [
+    {
+      "id": "tr_01J7K8M4",
+      "time": "14:32:08",
+      "incident": "Cooling-path imbalance",
+      "rack": "R02",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 6120,
+      "tokens": 4872,
+      "cost": 0.162,
+      "status": "success",
+      "eval": 0.96,
+      "decision": "awaiting_review"
+    },
+    {
+      "id": "tr_01J7K82P",
+      "time": "14:31:44",
+      "incident": "PCIe link degradation",
+      "rack": "R01",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 7480,
+      "tokens": 5218,
+      "cost": 0.184,
+      "status": "warning",
+      "eval": 0.91,
+      "decision": "awaiting_review"
+    },
+    {
+      "id": "tr_01J7K7ZB",
+      "time": "14:31:02",
+      "incident": "Healthy baseline",
+      "rack": "R04",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 4280,
+      "tokens": 3621,
+      "cost": 0.121,
+      "status": "success",
+      "eval": 0.99,
+      "decision": "no_action"
+    },
+    {
+      "id": "tr_01J7K7V9",
+      "time": "14:30:37",
+      "incident": "Power-cap event",
+      "rack": "R03",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 6940,
+      "tokens": 4934,
+      "cost": 0.171,
+      "status": "success",
+      "eval": 0.95,
+      "decision": "awaiting_review"
+    },
+    {
+      "id": "tr_01J7K7QP",
+      "time": "14:29:56",
+      "incident": "Cooling-path imbalance",
+      "rack": "R02",
+      "model": "qwen3-8b-base",
+      "latency_ms": 9680,
+      "tokens": 5982,
+      "cost": 0.208,
+      "status": "error",
+      "eval": 0.71,
+      "decision": "citation_failed"
+    },
+    {
+      "id": "tr_01J7K7K3",
+      "time": "14:29:21",
+      "incident": "Firmware drift",
+      "rack": "R03",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 5810,
+      "tokens": 4511,
+      "cost": 0.151,
+      "status": "success",
+      "eval": 0.94,
+      "decision": "awaiting_review"
+    },
+    {
+      "id": "tr_01J7K7F1",
+      "time": "14:28:45",
+      "incident": "NVLink degradation",
+      "rack": "R01",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 8320,
+      "tokens": 5532,
+      "cost": 0.192,
+      "status": "warning",
+      "eval": 0.88,
+      "decision": "awaiting_review"
+    },
+    {
+      "id": "tr_01J7K79M",
+      "time": "14:28:04",
+      "incident": "Certificate drift",
+      "rack": "R04",
+      "model": "qwen3-8b-racklens-lora",
+      "latency_ms": 5060,
+      "tokens": 3984,
+      "cost": 0.134,
+      "status": "success",
+      "eval": 0.97,
+      "decision": "awaiting_review"
+    }
+  ],
+  "waterfall": [
+    {
+      "name": "collect_redfish",
+      "start_ms": 0,
+      "duration_ms": 184,
+      "kind": "tool"
+    },
+    {
+      "name": "normalize_signals",
+      "start_ms": 184,
+      "duration_ms": 126,
+      "kind": "chain"
+    },
+    {
+      "name": "align_timeline",
+      "start_ms": 310,
+      "duration_ms": 312,
+      "kind": "tool"
+    },
+    {
+      "name": "retrieve_evidence",
+      "start_ms": 622,
+      "duration_ms": 428,
+      "kind": "retriever"
+    },
+    {
+      "name": "generate_hypotheses",
+      "start_ms": 1050,
+      "duration_ms": 2840,
+      "kind": "llm"
+    },
+    {
+      "name": "verify_citations",
+      "start_ms": 3890,
+      "duration_ms": 742,
+      "kind": "evaluator"
+    },
+    {
+      "name": "human_review_gate",
+      "start_ms": 4632,
+      "duration_ms": 96,
+      "kind": "guard"
+    }
+  ],
+  "correlations": [
+    {
+      "time": "14:32:08",
+      "hardware_event": "R02 inlet +5.6°C",
+      "trace_id": "tr_01J7K8M4",
+      "ai_finding": "Cooling-path imbalance",
+      "lead_time": "94s",
+      "confidence": "91%"
+    },
+    {
+      "time": "14:31:44",
+      "hardware_event": "R01-U14 PCIe x16 → x4",
+      "trace_id": "tr_01J7K82P",
+      "ai_finding": "PCIe link degradation",
+      "lead_time": "11s",
+      "confidence": "96%"
+    },
+    {
+      "time": "14:30:37",
+      "hardware_event": "R03 power cap active",
+      "trace_id": "tr_01J7K7V9",
+      "ai_finding": "Power budget constraint",
+      "lead_time": "18s",
+      "confidence": "94%"
+    },
+    {
+      "time": "14:29:21",
+      "hardware_event": "R03 firmware baseline drift",
+      "trace_id": "tr_01J7K7K3",
+      "ai_finding": "Firmware regression",
+      "lead_time": "2m 12s",
+      "confidence": "89%"
+    },
+    {
+      "time": "14:28:45",
+      "hardware_event": "R01 NVLink CRC burst",
+      "trace_id": "tr_01J7K7F1",
+      "ai_finding": "NVLink path degradation",
+      "lead_time": "37s",
+      "confidence": "87%"
+    }
+  ]
+}

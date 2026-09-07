@@ -284,6 +284,7 @@ export function ObservabilityDashboard() {
           <Search /> Search dashboards and signals <kbd>⌘K</kbd>
         </button>
         <nav aria-label="Observability navigation">
+          <a href="/ai-observability">AI Observability</a>
           <a href="/studio">3D Studio</a>
           <a href="/platform">Product Lab</a>
           <button aria-label="Notifications">
@@ -540,6 +541,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <AreaChart
               data={lineData}
@@ -614,6 +616,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <LineChart
               data={lineData}
@@ -683,6 +686,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <BarChart
               data={gpuData}
@@ -731,6 +735,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <BarChart
               data={gpuData}
@@ -780,6 +785,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <AreaChart
               data={lineData}
@@ -859,6 +865,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <LineChart
               data={lineData}
@@ -1012,6 +1019,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <LineChart
               data={lineData}
@@ -1139,6 +1147,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <AreaChart
               data={lineData}
@@ -1202,6 +1211,7 @@ export function ObservabilityDashboard() {
             height="100%"
             minWidth={0}
             minHeight={0}
+            initialDimension={{ width: 720, height: 255 }}
           >
             <BarChart
               data={serviceFreshness}
