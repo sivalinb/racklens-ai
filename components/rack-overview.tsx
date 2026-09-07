@@ -22,6 +22,7 @@ import {
 import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DataCenterTwin } from '@/components/data-center-twin';
 import { GpuTopology } from '@/components/gpu-topology';
 import { TelemetryCharts } from '@/components/telemetry-charts';
 import { RACKS, SCENARIOS, type ScenarioKey } from '@/lib/demo-data';
@@ -138,6 +139,7 @@ export function RackOverview() {
         </a>
         <nav aria-label="Primary navigation">
           <a href="/">Home</a>
+          <a href="#digital-twin">Digital twin</a>
           <a href="#fleet">Fleet</a>
           <a href="#gpu">GPU fabric</a>
           <a href="#telemetry">Telemetry</a>
@@ -197,6 +199,12 @@ export function RackOverview() {
           ))}
         </div>
       </section>
+
+      <DataCenterTwin
+        running={running}
+        scenarioKey={scenarioKey}
+        onRackSelect={setSelectedRack}
+      />
 
       <section className="kpi-grid" aria-label="Fleet summary">
         <article className="kpi-card tone-cyan">
