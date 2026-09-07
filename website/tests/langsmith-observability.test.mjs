@@ -92,3 +92,24 @@ test('source joins Redfish events to AI traces and feedback', () => {
     assert.ok(correlation.ai_finding);
   }
 });
+
+test('five-week learning checklist maps Redfish through model adaptation', () => {
+  for (const week of ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5']) {
+    assert.match(dashboard, new RegExp(week));
+  }
+  for (const lesson of [
+    'Redfish foundations',
+    'Evidence and RAG',
+    'Reliability agent',
+    'LangSmith observability',
+    'LoRA and QLoRA',
+    'human-review boundary',
+    '200 operator-reviewed examples',
+  ]) {
+    assert.match(dashboard, new RegExp(lesson, 'i'));
+  }
+  assert.match(dashboard, /type="checkbox"/);
+  assert.match(dashboard, /learningProgress/);
+  assert.match(dashboard, /Open Redfish signals/);
+  assert.match(dashboard, /Open adapter foundry/);
+});

@@ -4,7 +4,9 @@
 import {
   Activity,
   Bell,
+  BookOpenCheck,
   BrainCircuit,
+  Check,
   Clock3,
   Coins,
   Database,
@@ -19,6 +21,7 @@ import {
   Pause,
   Play,
   RefreshCw,
+  RotateCcw,
   Search,
   Settings,
   ShieldCheck,
@@ -60,6 +63,79 @@ const views = [
   'Correlations',
 ] as const;
 
+const learningWeeks = [
+  {
+    week: 'Week 1',
+    phase: 'Instrument',
+    title: 'Redfish foundations',
+    outcome: 'Explain how each hardware signal reaches the dashboard.',
+    proof: 'Open Redfish signals',
+    href: '/dashboard',
+    tasks: [
+      'Map Systems, Chassis and Managers resources',
+      'Collect thermal and power data with GET-only access',
+      'Compare TelemetryService reports with EventService events',
+      'Verify every metric against its Redfish source URI',
+    ],
+  },
+  {
+    week: 'Week 2',
+    phase: 'Contextualize',
+    title: 'Evidence and RAG',
+    outcome: 'Turn raw sensor changes into a cited incident timeline.',
+    proof: 'Inspect RAG quality',
+    href: '#rag-quality',
+    tasks: [
+      'Normalize units, health rollups and event severity',
+      'Align BMC, GPU and workload timestamps',
+      'Retrieve evidence by rack, component and incident ID',
+      'Reject claims whose evidence IDs do not resolve',
+    ],
+  },
+  {
+    week: 'Week 3',
+    phase: 'Reason',
+    title: 'Reliability agent',
+    outcome: 'Trace a bounded investigation from tools to human review.',
+    proof: 'Follow trace waterfall',
+    href: '#trace-waterfall',
+    tasks: [
+      'Trace collector, retriever and LLM as nested runs',
+      'Generate exactly three ranked hypotheses',
+      'Attach Redfish evidence to every recommendation',
+      'Stop at the human-review boundary before action',
+    ],
+  },
+  {
+    week: 'Week 4',
+    phase: 'Evaluate',
+    title: 'LangSmith observability',
+    outcome: 'Measure whether the AI is useful, fast and affordable.',
+    proof: 'Review AI signals',
+    href: '#ai-signals',
+    tasks: [
+      'Inspect trace p50, p95 and p99 latency',
+      'Track groundedness, citation and eval-pass thresholds',
+      'Monitor token usage, tool latency and estimated cost',
+      'Correlate AI findings with Redfish event lead time',
+    ],
+  },
+  {
+    week: 'Week 5',
+    phase: 'Adapt',
+    title: 'LoRA and QLoRA',
+    outcome: 'Specialize only after reviewed data clears release gates.',
+    proof: 'Open adapter foundry',
+    href: '/platform#roadmap',
+    tasks: [
+      'Curate at least 200 operator-reviewed examples',
+      'Train a LoRA baseline without changing the base model',
+      'Run a 4-bit QLoRA experiment for constrained hardware',
+      'Promote only when quality rises with no safety regression',
+    ],
+  },
+] as const;
+
 const subscribeToBrowser = () => () => undefined;
 
 type TooltipProps = {
@@ -89,12 +165,14 @@ function AiTooltip({ active, payload, label }: TooltipProps) {
 }
 
 function AiPanel({
+  id,
   title,
   subtitle,
   children,
   className = '',
   chart = false,
 }: {
+  id?: string;
   title: string;
   subtitle: string;
   children: React.ReactNode;
@@ -107,7 +185,7 @@ function AiPanel({
     () => false,
   );
   return (
-    <section className={`observe-panel ls-panel ${className}`}>
+    <section id={id} className={`observe-panel ls-panel ${className}`}>
       <header>
         <div>
           <h2>{title}</h2>
@@ -151,6 +229,9 @@ export function LangSmithObservabilityDashboard() {
   const [refreshTick, setRefreshTick] = useState(0);
   const [view, setView] = useState<(typeof views)[number]>('Overview');
   const [traceSearch, setTraceSearch] = useState('');
+  const [completedLessons, setCompletedLessons] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   const series = useMemo(
     () =>
@@ -181,6 +262,21 @@ export function LangSmithObservabilityDashboard() {
     (langsmithData.traces.filter((trace) => trace.status !== 'error').length /
       langsmithData.traces.length) *
     100;
+  const totalLessons = learningWeeks.reduce(
+    (sum, week) => sum + week.tasks.length,
+    0,
+  );
+  const learningProgress = Math.round(
+    (completedLessons.size / totalLessons) * 100,
+  );
+  const toggleLesson = (lessonId: string) => {
+    setCompletedLessons((current) => {
+      const next = new Set(current);
+      if (next.has(lessonId)) next.delete(lessonId);
+      else next.add(lessonId);
+      return next;
+    });
+  };
   const chartCommon = {
     stroke: '#3a3a3a',
     tick: { fill: '#9f9f9f', fontSize: 11 },
@@ -444,7 +540,73 @@ export function LangSmithObservabilityDashboard() {
         </article>
       </section>
 
-      <section className="observe-grid ls-grid">
+      <section className="ls-learning" id="learning-path">
+        <header>
+          <div>
+            <span>
+              <BookOpenCheck /> BUILD &amp; LEARN
+            </span>
+            <h2>Five-week RackLens learning checklist</h2>
+            <p>
+              Complete each lab against the telemetry, traces and evaluation
+              evidence in this product.
+            </p>
+          </div>
+          <div className="ls-learning-progress">
+            <strong>
+              {completedLessons.size}/{totalLessons}
+            </strong>
+            <span>labs complete · {learningProgress}%</span>
+            <i>
+              <em style={{ width: `${learningProgress}%` }} />
+            </i>
+            <button
+              onClick={() => setCompletedLessons(new Set())}
+              disabled={completedLessons.size === 0}
+            >
+              <RotateCcw /> Reset
+            </button>
+          </div>
+        </header>
+        <div className="ls-week-grid">
+          {learningWeeks.map((week, weekIndex) => {
+            const weekDone = week.tasks.filter((_, taskIndex) =>
+              completedLessons.has(`${weekIndex}-${taskIndex}`),
+            ).length;
+            return (
+              <article key={week.week}>
+                <div className="ls-week-heading">
+                  <span>{week.week}</span>
+                  <b>{week.phase}</b>
+                  <strong>{weekDone}/4</strong>
+                </div>
+                <h3>{week.title}</h3>
+                <p>{week.outcome}</p>
+                <div className="ls-week-tasks">
+                  {week.tasks.map((task, taskIndex) => {
+                    const lessonId = `${weekIndex}-${taskIndex}`;
+                    const checked = completedLessons.has(lessonId);
+                    return (
+                      <label key={task} className={checked ? 'complete' : ''}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleLesson(lessonId)}
+                        />
+                        <i>{checked && <Check />}</i>
+                        <span>{task}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <a href={week.href}>{week.proof} →</a>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="observe-grid ls-grid" id="ai-signals">
         <AiPanel
           title="Trace throughput & error rate"
           subtitle="Root runs · traces/min and error %"
@@ -784,6 +946,7 @@ export function LangSmithObservabilityDashboard() {
         </AiPanel>
 
         <AiPanel
+          id="rag-quality"
           title="RAG evidence quality"
           subtitle="Latest evaluated investigation"
           className="panel-tall"
@@ -836,6 +999,7 @@ export function LangSmithObservabilityDashboard() {
         </AiPanel>
 
         <AiPanel
+          id="trace-waterfall"
           title="Selected trace waterfall"
           subtitle="tr_01J7K8M4 · 4.73s instrumented path"
           className="panel-wide panel-tall"

@@ -29,6 +29,9 @@ The dashboard provides:
 - Dedicated `/ai-observability` workspace for LangSmith-shaped traces, nested
   runs, tool latency, token cost, RAG quality, online evaluations, safety gates,
   and Redfish-to-AI incident correlation
+- Interactive five-week learning checklist that moves from Redfish collection
+  through evidence/RAG, bounded agents, LangSmith evaluation, and LoRA/QLoRA
+  release gating, with a product proof link for every week
 - Downloadable, deterministic AI-observability source at
   `/data/langsmith-observability.json`, linked from every AI dashboard view
 - 42 selected-target Redfish and OEM measurements with searchable provenance,
