@@ -5,9 +5,11 @@ dist/
 .wrangler/
 .env
 .venv/
+.racklens/
 __pycache__/
 *.pyc
 .pytest_cache/
 .DS_Store
 coverage/
 *.log
+.racklens/

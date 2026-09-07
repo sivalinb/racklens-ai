@@ -1,4 +1,5 @@
 import unittest
+from datetime import UTC, datetime
 from tempfile import TemporaryDirectory
 
 from racklens.agent import ReliabilityAgent
@@ -6,6 +7,7 @@ from racklens.capabilities import capability_catalog, capability_summary
 from racklens.knowledge import LocalHybridRetriever
 from racklens.simulator import RackSimulator, SCENARIOS
 from racklens.training import build_training_examples, export_training_dataset, model_ops_manifest, train_adapter
+from racklens.telemetry import MetricSample, SQLiteTelemetryStore, TelemetryTarget
 
 
 class SimulatorTests(unittest.TestCase):
@@ -98,6 +100,27 @@ class ProductPlatformTests(unittest.TestCase):
             export_training_dataset(directory)
             with self.assertRaisesRegex(ValueError, "training gate blocked"):
                 train_adapter(directory, f"{directory}/adapter")
+
+
+class TelemetryStoreTests(unittest.TestCase):
+    def test_sqlite_store_persists_normalized_redfish_samples(self):
+        with TemporaryDirectory() as directory:
+            store = SQLiteTelemetryStore(f"{directory}/telemetry.db")
+            target = TelemetryTarget()
+            sample = MetricSample(
+                timestamp=datetime.now(UTC),
+                metric="thermal.inlet_c",
+                value=24.6,
+                unit="Cel",
+                source_uri="/redfish/v1/Chassis/R02/Thermal#/Temperatures/0",
+                target=target,
+                trace_id="tr_test",
+            )
+            self.assertEqual(store.insert_metrics([sample]), 1)
+            rows = store.query_metrics(target)
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["metric_name"], "thermal.inlet_c")
+            self.assertEqual(rows[0]["trace_id"], "tr_test")
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ import {
   TriangleAlert,
   Zap,
 } from 'lucide-react';
-import { useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import {
   Area,
   AreaChart,
@@ -89,6 +89,33 @@ const dashboardViews = [
 ] as const;
 
 const subscribeToBrowser = () => () => undefined;
+
+type TelemetryApiPayload = {
+  source: {
+    mode: string;
+    engine: string;
+    ingestion: string;
+    api: string;
+    persistent: boolean;
+  };
+  freshnessSeconds: number | null;
+  sampleCount: number;
+  series: Array<{
+    timestamp: number;
+    time: string;
+    power: number;
+    inlet: number;
+    exhaust: number;
+    fan: number;
+    ingress: number;
+    egress: number;
+    clock: number;
+    utilization: number;
+    gpuTemperature: number;
+    gpuPower: number;
+    pollLatency: number;
+  }>;
+};
 
 function Panel({
   title,
@@ -180,9 +207,56 @@ export function ObservabilityDashboard() {
   const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('cooling');
   const [view, setView] = useState<(typeof dashboardViews)[number]>('Overview');
   const [signalSearch, setSignalSearch] = useState('');
+  const [liveTelemetry, setLiveTelemetry] =
+    useState<TelemetryApiPayload | null>(null);
+  const [telemetryState, setTelemetryState] = useState<
+    'connecting' | 'live' | 'fallback'
+  >('connecting');
   const scenario = SCENARIOS[scenarioKey];
 
-  const lineData = useMemo(
+  useEffect(() => {
+    if (paused) return;
+    const intervalSeconds = Number.parseInt(refresh, 10);
+    if (!Number.isFinite(intervalSeconds)) return;
+    const timer = window.setInterval(
+      () => setRefreshTick((value) => value + 1),
+      intervalSeconds * 1_000,
+    );
+    return () => window.clearInterval(timer);
+  }, [paused, refresh]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const params = new URLSearchParams({
+      data_center: dataCenter,
+      hall,
+      row,
+      rack,
+      node: node === 'All nodes' ? 'U18' : node,
+      gpu: gpu === 'All GPUs' ? 'GPU0' : gpu.replace(' ', ''),
+      range,
+    });
+    fetch(`/api/telemetry/query?${params}`, {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('live telemetry unavailable');
+        return (await response.json()) as TelemetryApiPayload;
+      })
+      .then((payload) => {
+        setLiveTelemetry(payload);
+        setTelemetryState('live');
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError')
+          return;
+        setTelemetryState('fallback');
+      });
+    return () => controller.abort();
+  }, [dataCenter, hall, row, rack, node, gpu, range, refreshTick]);
+
+  const replayLineData = useMemo(
     () =>
       timeLabels.map((time, index) => ({
         time,
@@ -204,6 +278,20 @@ export function ObservabilityDashboard() {
         ),
       })),
     [scenario, scenarioKey, refreshTick],
+  );
+  const lineData = useMemo(
+    () =>
+      liveTelemetry?.series.length
+        ? liveTelemetry.series.map((point) => ({
+            ...point,
+            time: new Date(point.timestamp).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            cap: scenarioKey === 'power' ? 35 : 48,
+          }))
+        : replayLineData,
+    [liveTelemetry, replayLineData, scenarioKey],
   );
 
   const gpuData = useMemo(
@@ -313,11 +401,38 @@ export function ObservabilityDashboard() {
         </div>
       </div>
 
+      <section
+        className="telemetry-source-strip"
+        aria-label="Telemetry data source"
+      >
+        <div>
+          <Database />
+          <span>DATA SOURCE</span>
+          <strong>
+            {telemetryState === 'live'
+              ? liveTelemetry?.source.engine
+              : telemetryState === 'connecting'
+                ? 'Connecting to hosted telemetry store'
+                : 'Deterministic replay fallback'}
+          </strong>
+          <i className={telemetryState}>{telemetryState.toUpperCase()}</i>
+        </div>
+        <p>
+          {telemetryState === 'live'
+            ? `${liveTelemetry?.sampleCount ?? 0} normalized samples · ${liveTelemetry?.source.ingestion}`
+            : 'Charts remain operational while the persistent source reconnects'}
+        </p>
+        <a href="/api/telemetry/query" target="_blank" rel="noreferrer">
+          Query API ↗
+        </a>
+      </section>
+
       <section className="observe-toolbar" aria-label="Dashboard controls">
         <div className="observe-variables">
           <label>
             Data source
             <select>
+              <option>Hosted time-series store</option>
               <option>Redfish TelemetryService</option>
               <option>EventService</option>
               <option>OEM MetricReports</option>
@@ -456,17 +571,21 @@ export function ObservabilityDashboard() {
 
       <section className="observe-statusbar">
         <span>
-          <i className="status-live" />{' '}
-          {paused ? 'Streaming paused' : `Streaming · refresh ${refresh}`}
+          <i className={`status-live ${telemetryState}`} />{' '}
+          {paused
+            ? 'Streaming paused'
+            : telemetryState === 'live'
+              ? `Persistent stream · refresh ${refresh}`
+              : `Replay fallback · refresh ${refresh}`}
         </span>
         <span>
           {dataCenter} / {hall} / {row} / {rack} / {node} / {gpu}
         </span>
         <span>
-          <Database /> 112 Redfish + OEM series · {catalog.length} selected
-          signals
+          <Database /> {liveTelemetry?.sampleCount ?? 112} stored samples ·{' '}
+          {catalog.length} selected signals
         </span>
-        <span>Updated 2s ago</span>
+        <span>Updated {liveTelemetry?.freshnessSeconds ?? 2}s ago</span>
       </section>
 
       <section
@@ -493,7 +612,10 @@ export function ObservabilityDashboard() {
             <Zap /> Rack power
           </span>
           <strong>
-            {scenario.metrics.power.at(-1)?.toFixed(1)} <small>kW</small>
+            {(lineData.at(-1)?.power ?? scenario.metrics.power.at(-1))?.toFixed(
+              1,
+            )}{' '}
+            <small>kW</small>
           </strong>
           <b className="ok">NORMAL</b>
         </article>
@@ -502,7 +624,9 @@ export function ObservabilityDashboard() {
             <Thermometer /> Peak inlet
           </span>
           <strong>
-            {scenario.metrics.thermal.at(-1)?.toFixed(1)}
+            {(
+              lineData.at(-1)?.inlet ?? scenario.metrics.thermal.at(-1)
+            )?.toFixed(1)}
             <small>°C</small>
           </strong>
           <b className={scenarioKey === 'cooling' ? 'warn' : 'ok'}>

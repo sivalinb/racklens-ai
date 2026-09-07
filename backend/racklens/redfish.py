@@ -51,6 +51,41 @@ class RedfishClient:
                 resources.append(RedfishResource(uri, {"available": False, "error_type": type(exc).__name__}))
         return resources
 
+    def crawl(self, max_resources: int = 200) -> list[RedfishResource]:
+        """Follow in-service @odata.id links with GET only and a hard safety cap."""
+        queue = list(self.READ_ENDPOINTS)
+        seen: set[str] = set()
+        resources: list[RedfishResource] = []
+        while queue and len(resources) < max_resources:
+            uri = queue.pop(0)
+            if uri in seen or not uri.startswith("/redfish/"):
+                continue
+            seen.add(uri)
+            try:
+                resource = self.get(uri)
+            except Exception as exc:
+                resources.append(RedfishResource(uri, {"available": False, "error_type": type(exc).__name__}))
+                continue
+            resources.append(resource)
+            for linked_uri in self._linked_uris(resource.payload):
+                if linked_uri not in seen and linked_uri.startswith("/redfish/"):
+                    queue.append(linked_uri)
+        return resources
+
+    @classmethod
+    def _linked_uris(cls, value) -> set[str]:
+        links: set[str] = set()
+        if isinstance(value, dict):
+            uri = value.get("@odata.id")
+            if isinstance(uri, str):
+                links.add(uri)
+            for child in value.values():
+                links.update(cls._linked_uris(child))
+        elif isinstance(value, list):
+            for child in value:
+                links.update(cls._linked_uris(child))
+        return links
+
     def capability_matrix(self) -> list[dict]:
         return [
             {

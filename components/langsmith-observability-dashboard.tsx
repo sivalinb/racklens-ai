@@ -26,7 +26,7 @@ import {
   Settings,
   ShieldCheck,
 } from 'lucide-react';
-import { useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import {
   Bar,
   BarChart,
@@ -138,6 +138,32 @@ const learningWeeks = [
 
 const subscribeToBrowser = () => () => undefined;
 
+type TraceApiPayload = {
+  source: {
+    mode: string;
+    engine: string;
+    exportMode: string;
+    api: string;
+    persistent: boolean;
+    liveLangSmithConnection: boolean;
+  };
+  freshnessSeconds: number | null;
+  traceCount: number;
+  series: Array<{
+    time: string;
+    traces: number;
+    errors: number;
+    p50: number;
+    p95: number;
+    p99: number;
+    tokens: number;
+    cost: number;
+    groundedness: number;
+    citations: number;
+    eval_pass: number;
+  }>;
+};
+
 type TooltipProps = {
   active?: boolean;
   label?: string | number;
@@ -232,18 +258,76 @@ export function LangSmithObservabilityDashboard() {
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(
     () => new Set(),
   );
+  const [traceTelemetry, setTraceTelemetry] = useState<TraceApiPayload | null>(
+    null,
+  );
+  const [traceSourceState, setTraceSourceState] = useState<
+    'connecting' | 'live' | 'fallback'
+  >('connecting');
+
+  useEffect(() => {
+    if (paused) return;
+    const intervalSeconds = Number.parseInt(refresh, 10);
+    if (!Number.isFinite(intervalSeconds)) return;
+    const timer = window.setInterval(
+      () => setRefreshTick((value) => value + 1),
+      intervalSeconds * 1_000,
+    );
+    return () => window.clearInterval(timer);
+  }, [paused, refresh]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/observability/traces', {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('trace store unavailable');
+        return (await response.json()) as TraceApiPayload;
+      })
+      .then((payload) => {
+        setTraceTelemetry(payload);
+        setTraceSourceState('live');
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError')
+          return;
+        setTraceSourceState('fallback');
+      });
+    return () => controller.abort();
+  }, [
+    project,
+    environment,
+    service,
+    dataCenter,
+    rack,
+    model,
+    prompt,
+    range,
+    refreshTick,
+  ]);
 
   const series = useMemo(
     () =>
-      langsmithData.series.map((point) => ({
+      (traceTelemetry?.series.length
+        ? traceTelemetry.series
+        : langsmithData.series
+      ).map((point) => ({
         ...point,
+        time: point.time.includes('T')
+          ? new Date(point.time).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : point.time,
         traces: point.traces + (refreshTick % 2),
         errorRate: Number(((point.errors / point.traces) * 100).toFixed(2)),
         groundednessPct: point.groundedness * 100,
         citationsPct: point.citations * 100,
         evalPassPct: point.eval_pass * 100,
       })),
-    [refreshTick],
+    [refreshTick, traceTelemetry],
   );
   const latest = series.at(-1) ?? series[0];
   const filteredTraces = langsmithData.traces.filter((trace) => {
@@ -331,10 +415,29 @@ export function LangSmithObservabilityDashboard() {
         <div>
           <Database />
           <span>DATA SOURCE</span>
-          <strong>LangSmith-shaped trace replay</strong>
-          <i>SIMULATED</i>
+          <strong>
+            {traceSourceState === 'live'
+              ? traceTelemetry?.source.engine
+              : traceSourceState === 'connecting'
+                ? 'Connecting to persistent trace store'
+                : 'LangSmith-shaped trace replay'}
+          </strong>
+          <i className={traceSourceState}>
+            {traceSourceState === 'live'
+              ? 'PERSISTED'
+              : traceSourceState === 'connecting'
+                ? 'CONNECTING'
+                : 'SIMULATED FALLBACK'}
+          </i>
         </div>
-        <p>Projects → traces → runs → metadata → feedback</p>
+        <p>
+          {traceSourceState === 'live'
+            ? `${traceTelemetry?.traceCount ?? 0} traces · ${traceTelemetry?.source.exportMode}`
+            : 'Projects → traces → runs → metadata → feedback'}
+        </p>
+        <a href="/api/observability/traces" target="_blank" rel="noreferrer">
+          Trace API <ExternalLink />
+        </a>
         <a
           href="https://docs.langchain.com/langsmith/observability-concepts"
           target="_blank"
@@ -473,7 +576,7 @@ export function LangSmithObservabilityDashboard() {
 
       <section className="observe-statusbar">
         <span>
-          <i className="status-live" />{' '}
+          <i className={`status-live ${traceSourceState}`} />{' '}
           {paused ? 'Trace stream paused' : `Trace stream · refresh ${refresh}`}
         </span>
         <span>
@@ -482,7 +585,13 @@ export function LangSmithObservabilityDashboard() {
         <span>
           <GitBranch /> 8 root traces · 52 child runs
         </span>
-        <span>Updated 3s ago</span>
+        <span>
+          {traceSourceState === 'live'
+            ? `Updated ${traceTelemetry?.freshnessSeconds ?? 0}s ago`
+            : traceSourceState === 'connecting'
+              ? 'Querying…'
+              : 'Replay active'}
+        </span>
       </section>
 
       <section

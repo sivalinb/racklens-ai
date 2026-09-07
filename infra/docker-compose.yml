@@ -1,0 +1,53 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8-alpine
+    environment:
+      CLICKHOUSE_DB: racklens
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: racklens-local
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.133.0
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    environment:
+      CLICKHOUSE_PASSWORD: racklens-local
+      RACKLENS_ENVIRONMENT: local-product
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: racklens-local
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+volumes:
+  clickhouse-data:
+  grafana-data:

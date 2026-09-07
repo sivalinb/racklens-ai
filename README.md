@@ -10,7 +10,7 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 **AI observability:** [racklens-ai.siva-babu.chatgpt.site/ai-observability](https://racklens-ai.siva-babu.chatgpt.site/ai-observability)
 
-> The public website is a deterministic, interactive replay using Redfish-shaped telemetry. The Python service can collect from an authorized Redfish endpoint. No production write operation is implemented.
+> The public website persists live Redfish-shaped demo telemetry and AI traces in a server-side time-series store, with an explicit replay fallback. The Python edge service can collect from an authorized Redfish endpoint and send batches to ClickHouse or the hosted ingestion API. No Redfish write operation is implemented.
 
 ## Product experience
 
@@ -34,6 +34,10 @@ The dashboard provides:
   release gating, with a product proof link for every week
 - Downloadable, deterministic AI-observability source at
   `/data/langsmith-observability.json`, linked from every AI dashboard view
+- Persistent hosted telemetry APIs at `/api/telemetry/query` and
+  `/api/observability/traces`, with freshness, source mode, and safe fallback
+- Token-protected `/api/telemetry/ingest` batches for an authorized edge collector
+- ClickHouse, OpenTelemetry Collector, and Grafana Compose stack for a production-shaped lab
 - 42 selected-target Redfish and OEM measurements with searchable provenance,
   legends, thresholds, heatmaps, events, and status rollups
 - Power, thermal, health, fabric, threshold, source URI, and event-stream panels
@@ -53,10 +57,13 @@ Redfish BMC / DMTF emulator
   └─ Firmware inventory
              │
              ▼
-Python collector → normalizer → signal correlation
+Python collector → normalizer → D1 / ClickHouse time-series store
              │                    │
-             │                    ├─ GPU / fabric evidence
-             │                    └─ power / thermal evidence
+             │                    ├─ OTLP → ClickHouse / LangSmith
+             │                    └─ query API → dashboards
+             ▼
+signal correlation → GPU / fabric / power / thermal evidence
+             │
              ▼
 Local hybrid RAG → three hypotheses → citation critic
              │                    │
@@ -83,6 +90,7 @@ racklens capabilities
 racklens evaluate
 racklens model-ops
 racklens build-training-dataset training-data
+racklens collect-redfish --interval 30
 uvicorn racklens.api:app --reload
 ```
 
@@ -124,6 +132,8 @@ npm run build
 | `GET /api/scenarios`                   | Available deterministic incidents      |
 | `GET /api/redfish/capabilities`        | Redfish capability and safety matrix   |
 | `GET /api/model-ops`                   | Adapter configuration and release gate |
+| `GET /api/telemetry/query`             | Query normalized stored measurements   |
+| `POST /api/telemetry/ingest`           | Ingest a bounded metric batch           |
 | `GET /api/fleet/{scenario}`            | Complete Redfish-shaped fleet snapshot |
 | `GET /api/events/{scenario}`           | Server-Sent Events telemetry replay    |
 | `POST /api/investigations/{scenario}`  | Evidence-first investigation           |
@@ -155,9 +165,9 @@ The optional training stack is installed with `pip install -e '.[training]'`. Th
 
 ## Honest boundaries
 
-- The public site replays deterministic telemetry; it does not connect to a real BMC.
-- The AI observability page uses a clearly labeled LangSmith-shaped replay; it
-  does not claim a live LangSmith connection or send production traces.
+- The public site persists Redfish-shaped simulator data; attaching a real BMC still requires an authorized edge collector and hosted ingest token.
+- The AI observability page persists OTel-shaped demo trace summaries and uses
+  a labeled detailed replay; it does not claim a live LangSmith connection.
 - The simulator uses generic `H100 SXM` labels for a realistic AI-rack demonstration; no vendor-specific management extension is claimed.
 - Recommendations are decision support, not autonomous remediation.
 - Real deployment requires least-privilege BMC accounts, TLS verification, secrets management, network isolation, access control, audit retention, and operator validation.
@@ -171,3 +181,5 @@ The optional training stack is installed with `pip install -e '.[training]'`. Th
 - [DMTF Redfish Interface Emulator](https://github.com/DMTF/Redfish-Interface-Emulator)
 - [DMTF Redfish Service Validator](https://github.com/DMTF/Redfish-Service-Validator)
 - [LangSmith observability concepts](https://docs.langchain.com/langsmith/observability-concepts)
+
+See [Live telemetry and free-cloud deployment](docs/LIVE_TELEMETRY.md) for the complete ClickHouse, OpenTelemetry, Grafana, hosted ingestion, and LangSmith setup.

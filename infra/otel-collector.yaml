@@ -1,0 +1,46 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 384
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: ${env:RACKLENS_ENVIRONMENT}
+        action: upsert
+  batch:
+    timeout: 5s
+    send_batch_size: 1000
+
+exporters:
+  clickhouse:
+    endpoint: tcp://clickhouse:9000?dial_timeout=10s
+    database: racklens_otel
+    username: default
+    password: ${env:CLICKHOUSE_PASSWORD}
+    create_schema: true
+    ttl: 720h
+  debug:
+    verbosity: basic
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [clickhouse, debug]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [clickhouse]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [clickhouse]
