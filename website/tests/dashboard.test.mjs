@@ -18,6 +18,14 @@ const twin = readFileSync(
   new URL('../../components/data-center-twin.tsx', import.meta.url),
   'utf8',
 );
+const signals = readFileSync(
+  new URL('../../components/signal-dashboard.tsx', import.meta.url),
+  'utf8',
+);
+const signalData = readFileSync(
+  new URL('../../lib/redfish-signals.ts', import.meta.url),
+  'utf8',
+);
 const data = readFileSync(
   new URL('../../lib/demo-data.ts', import.meta.url),
   'utf8',
@@ -96,4 +104,32 @@ test('motion and reduced-motion behavior are both implemented', () => {
 test('public experience is honestly labeled as replay', () => {
   assert.match(dashboard, /LIVE REPLAY/);
   assert.match(dashboard, /deterministic replay/);
+});
+
+test('signal dashboard follows rack and GPU selections', () => {
+  assert.match(dashboard, /selectedRack={selectedRack}/);
+  assert.match(dashboard, /selectedGpu={selectedGpu}/);
+  assert.match(signals, /Signal target/);
+  assert.match(
+    signals,
+    /target follows rack floor and GPU topology\s+selections/,
+  );
+});
+
+test('Redfish dashboard exposes the complete signal families and provenance', () => {
+  for (const family of ['Power', 'Thermal', 'Health', 'Fabric']) {
+    assert.match(signalData, new RegExp(`group: '${family}'`));
+  }
+  for (const source of [
+    'Chassis Power',
+    'TelemetryService',
+    'PCIeDevice Status',
+    'OEM MetricReport',
+    'EventService',
+  ]) {
+    assert.match(`${signals}\n${signalData}`, new RegExp(source));
+  }
+  assert.match(signals, /GET only/);
+  assert.match(signals, /Redfish event stream/);
+  assert.match(css, /@keyframes signalTrace/);
 });
