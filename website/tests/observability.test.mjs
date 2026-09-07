@@ -48,6 +48,9 @@ test('dashboard provides Grafana-style panel behaviors', () => {
     'ReferenceLine',
     'MetricTooltip',
     'GPU utilization heatmap',
+    'GPU accelerator clock',
+    'Redfish poll latency',
+    'Metric freshness',
     'Active thresholds & events',
     'Redfish signal inventory',
   ]) {
@@ -55,6 +58,9 @@ test('dashboard provides Grafana-style panel behaviors', () => {
   }
   assert.match(css, /observe-panel/);
   assert.match(css, /inventory-legend/);
+  assert.match(dashboard, /warning 1,600/);
+  assert.match(dashboard, /warning 500 ms/);
+  assert.match(dashboard, /stale 15s/);
 });
 
 test('signal inventory spans every Redfish observability family', () => {

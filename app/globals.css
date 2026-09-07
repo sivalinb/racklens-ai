@@ -811,6 +811,18 @@
   height: calc(100% - 52px);
   padding: 8px 6px 4px;
 }
+.observe-chart-loading {
+  display: grid;
+  height: 100%;
+  align-content: end;
+  gap: 31%;
+  padding: 15px 8px 34px;
+  opacity: 0.45;
+}
+.observe-chart-loading i {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #3b3d42, transparent);
+}
 .observe-tooltip {
   display: grid;
   min-width: 170px;

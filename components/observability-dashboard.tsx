@@ -25,7 +25,7 @@ import {
   TriangleAlert,
   Zap,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import {
   Area,
   AreaChart,
@@ -88,17 +88,26 @@ const dashboardViews = [
   'Inventory',
 ] as const;
 
+const subscribeToBrowser = () => () => undefined;
+
 function Panel({
   title,
   subtitle,
   children,
   className = '',
+  defer = false,
 }: {
   title: string;
   subtitle: string;
   children: React.ReactNode;
   className?: string;
+  defer?: boolean;
 }) {
+  const browserReady = useSyncExternalStore(
+    subscribeToBrowser,
+    () => true,
+    () => false,
+  );
   return (
     <section className={`observe-panel ${className}`}>
       <header>
@@ -115,7 +124,17 @@ function Panel({
           </button>
         </div>
       </header>
-      <div className="observe-panel-body">{children}</div>
+      <div className="observe-panel-body">
+        {defer && !browserReady ? (
+          <div className="observe-chart-loading" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
+        ) : (
+          children
+        )}
+      </div>
     </section>
   );
 }
@@ -176,6 +195,13 @@ export function ObservabilityDashboard() {
         fan: Math.round(69 + index * (scenarioKey === 'cooling' ? 2.35 : 0.3)),
         ingress: scenario.metrics.traffic[index],
         egress: Number((scenario.metrics.traffic[index] * 0.91).toFixed(2)),
+        clock: scenario.metrics.clock[index],
+        pollLatency: Math.round(
+          142 +
+            Math.sin(index * 0.9) * 24 +
+            (scenarioKey === 'pcie' && index > 7 ? 78 : 0) +
+            (refreshTick % 3) * 3,
+        ),
       })),
     [scenario, scenarioKey, refreshTick],
   );
@@ -227,6 +253,15 @@ export function ObservabilityDashboard() {
       ),
     ),
   }));
+  const serviceFreshness = [
+    { service: 'Systems', age: 3.2 },
+    { service: 'Chassis', age: 2.1 },
+    { service: 'Thermal', age: 1.9 },
+    { service: 'Power', age: 2.4 },
+    { service: 'Fabric', age: scenarioKey === 'pcie' ? 8.7 : 4.8 },
+    { service: 'GPU OEM', age: 6.2 },
+    { service: 'Events', age: 0.7 },
+  ];
   const groupCount = (group: ObservabilityGroup) =>
     catalog.filter((signal) => signal.group === group).length;
 
@@ -498,6 +533,7 @@ export function ObservabilityDashboard() {
           title="Rack power draw"
           subtitle={`${rack} · Chassis Power · kW`}
           className="panel-wide"
+          defer
         >
           <ResponsiveContainer
             width="100%"
@@ -571,6 +607,7 @@ export function ObservabilityDashboard() {
           title="Inlet / exhaust temperature"
           subtitle={`${rack} · Thermal · °C`}
           className="panel-wide"
+          defer
         >
           <ResponsiveContainer
             width="100%"
@@ -639,6 +676,7 @@ export function ObservabilityDashboard() {
         <Panel
           title="GPU temperature"
           subtitle={`${rack}-${node} · all accelerators · °C`}
+          defer
         >
           <ResponsiveContainer
             width="100%"
@@ -686,6 +724,7 @@ export function ObservabilityDashboard() {
         <Panel
           title="GPU board power"
           subtitle={`${rack}-${node} · OEM MetricReport · W`}
+          defer
         >
           <ResponsiveContainer
             width="100%"
@@ -734,6 +773,7 @@ export function ObservabilityDashboard() {
           title="ToR traffic"
           subtitle={`${rack} · ports A/B · Tb/s`}
           className="panel-wide"
+          defer
         >
           <ResponsiveContainer
             width="100%"
@@ -811,6 +851,8 @@ export function ObservabilityDashboard() {
         <Panel
           title="Cooling control"
           subtitle={`${rack} · fan zone 0 · duty %`}
+          className="panel-tall"
+          defer
         >
           <ResponsiveContainer
             width="100%"
@@ -911,6 +953,7 @@ export function ObservabilityDashboard() {
         <Panel
           title="Health state"
           subtitle={`${rack} · Redfish Status rollup`}
+          className="panel-tall"
         >
           <div className="observe-health-list">
             {[
@@ -956,6 +999,63 @@ export function ObservabilityDashboard() {
               </div>
             ))}
           </div>
+        </Panel>
+
+        <Panel
+          title="GPU accelerator clock"
+          subtitle={`${rack}-${node} · ${gpu} · MHz`}
+          className="panel-tall"
+          defer
+        >
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
+            <LineChart
+              data={lineData}
+              margin={{ top: 12, right: 18, left: -5, bottom: 0 }}
+            >
+              <CartesianGrid
+                stroke={chartCommon.stroke}
+                strokeDasharray="2 2"
+                vertical={false}
+              />
+              <XAxis
+                dataKey="time"
+                tick={chartCommon.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                domain={[1400, 1950]}
+                tick={chartCommon.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip content={<MetricTooltip />} />
+              <Legend verticalAlign="bottom" iconType="line" />
+              <ReferenceLine
+                y={1600}
+                stroke={palette.red}
+                strokeDasharray="6 4"
+                label={{
+                  value: 'warning 1,600',
+                  fill: palette.red,
+                  fontSize: 11,
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="clock"
+                name="Accelerator clock"
+                stroke={palette.purple}
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </Panel>
 
         <Panel
@@ -1026,6 +1126,128 @@ export function ObservabilityDashboard() {
               </div>
             ))}
           </div>
+        </Panel>
+
+        <Panel
+          title="Redfish poll latency"
+          subtitle="Collector · GET request latency · ms"
+          className="panel-tall"
+          defer
+        >
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
+            <AreaChart
+              data={lineData}
+              margin={{ top: 12, right: 18, left: -5, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="latency-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor={palette.cyan} stopOpacity={0.3} />
+                  <stop offset="1" stopColor={palette.cyan} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                stroke={chartCommon.stroke}
+                strokeDasharray="2 2"
+                vertical={false}
+              />
+              <XAxis
+                dataKey="time"
+                tick={chartCommon.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                domain={[0, 600]}
+                tick={chartCommon.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip content={<MetricTooltip />} />
+              <Legend verticalAlign="bottom" iconType="line" />
+              <ReferenceLine
+                y={500}
+                stroke={palette.orange}
+                strokeDasharray="6 4"
+                label={{
+                  value: 'warning 500 ms',
+                  fill: palette.orange,
+                  fontSize: 11,
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="pollLatency"
+                name="Poll latency"
+                stroke={palette.cyan}
+                strokeWidth={2}
+                fill="url(#latency-fill)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Panel>
+
+        <Panel
+          title="Metric freshness"
+          subtitle="Seconds since last report · lower is better"
+          className="panel-tall"
+          defer
+        >
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
+          >
+            <BarChart
+              data={serviceFreshness}
+              layout="vertical"
+              margin={{ top: 5, right: 20, left: 5, bottom: 0 }}
+            >
+              <CartesianGrid
+                stroke={chartCommon.stroke}
+                strokeDasharray="2 2"
+                horizontal={false}
+              />
+              <XAxis
+                type="number"
+                domain={[0, 20]}
+                tick={chartCommon.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                type="category"
+                dataKey="service"
+                width={65}
+                tick={chartCommon.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip content={<MetricTooltip />} />
+              <Legend verticalAlign="bottom" iconType="square" />
+              <ReferenceLine
+                x={15}
+                stroke={palette.red}
+                strokeDasharray="6 4"
+                label={{
+                  value: 'stale 15s',
+                  fill: palette.red,
+                  fontSize: 11,
+                }}
+              />
+              <Bar
+                dataKey="age"
+                name="Report age"
+                fill={palette.green}
+                radius={[0, 2, 2, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </Panel>
 
         <Panel
