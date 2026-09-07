@@ -9,8 +9,10 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from .agent import ReliabilityAgent
+from .capabilities import capability_catalog, capability_summary
 from .llm import OpenAICompatibleModel
 from .simulator import RackSimulator, SCENARIOS
+from .training import model_ops_manifest
 
 
 app = FastAPI(title="RackLens AI", version="0.1.0", docs_url="/docs")
@@ -36,6 +38,16 @@ def health():
 @app.get("/api/scenarios")
 def scenarios():
     return {"scenarios": [{"id": key, "description": value} for key, value in SCENARIOS.items()]}
+
+
+@app.get("/api/redfish/capabilities")
+def capabilities():
+    return {"summary": capability_summary(), "capabilities": capability_catalog()}
+
+
+@app.get("/api/model-ops")
+def model_ops():
+    return model_ops_manifest()
 
 
 @app.get("/api/fleet/{scenario}")

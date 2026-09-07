@@ -78,6 +78,21 @@ class ReliabilityAgent:
                 ("GPU compute saturation", .31, ("G-01",), "Utilization is elevated but cannot explain a negotiated-width event."),
                 ("Top-of-rack congestion", .18, ("R-01",), "The impact is isolated to one node rather than the rack network."),
             ],
+            "firmware_regression": [
+                ("BMC firmware regression on R04", .89, ("R-01", "G-01", "E-02", "E-03"), "A peer-divergent firmware change precedes fan-zone instability and clock loss on the same rack."),
+                ("Cooling containment restriction", .42, ("R-01", "G-01"), "Thermals rise, but the localized fan event and recent firmware change provide stronger evidence."),
+                ("Workload-driven saturation", .21, ("G-01",), "The workload signal does not explain the fan-zone event or firmware divergence."),
+            ],
+            "nvlink_degradation": [
+                ("NVLink path degradation on R01-U13", .95, ("R-01", "G-01", "E-02"), "The peer-path event and isolated NVLink throughput collapse align while rack thermal health remains normal."),
+                ("PCIe host-link degradation", .34, ("G-01",), "Host traffic remains inside its peer envelope and no negotiated-width event is present."),
+                ("GPU compute saturation", .17, ("G-01",), "Utilization alone cannot explain the explicit interconnect event."),
+            ],
+            "certificate_drift": [
+                ("BMC certificate entering expiry window", .99, ("E-02", knowledge_id), "The manager certificate event directly identifies a policy-window violation without a hardware anomaly."),
+                ("BMC network instability", .18, ("E-02",), "No interface or connectivity evidence supports a network failure."),
+                ("Hardware health degradation", .05, ("R-01",), "Rack telemetry stays inside the healthy envelope."),
+            ],
             "healthy": [
                 ("No active hardware anomaly", .97, ("R-01", "E-01"), "Rack health, temperature, power and traffic remain inside the replay envelope."),
                 ("Early thermal drift", .12, ("R-01",), "No threshold or peer deviation currently supports this hypothesis."),
@@ -95,6 +110,9 @@ class ReliabilityAgent:
             "cooling_imbalance": "Inspect R02 cold-aisle airflow and compare inlet sensors before changing workload placement.",
             "power_cap": "Confirm the configured chassis power limit and facility budget before changing the cap.",
             "pcie_degradation": "Drain R01-U14 from new work and inspect the PCIe link during an approved maintenance window.",
+            "firmware_regression": "Compare R04 BMC firmware and fan policy with healthy peers; stage rollback only inside an approved maintenance window.",
+            "nvlink_degradation": "Drain R01-U13 from new collective work and run an approved interconnect diagnostic in the lab.",
+            "certificate_drift": "Schedule certificate rotation through the authorized change workflow before the policy window closes.",
             "healthy": "Continue monitoring; no intervention is supported by current evidence.",
         }[scenario]
 

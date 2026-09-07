@@ -11,6 +11,9 @@ SCENARIOS = {
     "cooling_imbalance": "A blocked cold aisle raises inlet temperature and reduces clocks in R02.",
     "power_cap": "A rack-level power limit reduces GPU clocks while temperatures remain normal.",
     "pcie_degradation": "A PCIe link degradation reduces host-to-GPU traffic on one node.",
+    "firmware_regression": "A peer-divergent BMC firmware update precedes fan-control instability in R04.",
+    "nvlink_degradation": "An NVLink path degrades on one training node while PCIe and rack thermals remain healthy.",
+    "certificate_drift": "The BMC certificate on R03 approaches expiry while hardware telemetry remains healthy.",
     "healthy": "All telemetry remains inside the expected operating envelope.",
 }
 
@@ -66,6 +69,13 @@ class RackSimulator:
             network *= 0.31
             nvlink_adjust = -175
             health = "critical"
+        elif scenario == "firmware_regression" and rack_id == "R04" and position_u >= 16:
+            inlet += 2.4
+            clock_adjust = -95
+            health = "warning"
+        elif scenario == "nvlink_degradation" and rack_id == "R01" and position_u == 13:
+            nvlink_adjust = -290
+            health = "critical"
         gpus = tuple(self._gpu(i, inlet, power / 8, phase, clock_adjust, nvlink_adjust, health) for i in range(8))
         return Node(node_id, rack_id, position_u, round(inlet, 1), round(inlet + 14.8, 1), round(power, 1), round(network, 1), "BMC-7.12.4", health, gpus)
 
@@ -89,6 +99,15 @@ class RackSimulator:
             base.append(Event(now.isoformat(), "warning", "/redfish/v1/Chassis/R03/Power", "Power.1.0.CapActive", "Rack power cap is constraining accelerator clocks"))
         elif scenario == "pcie_degradation":
             base.append(Event(now.isoformat(), "critical", "/redfish/v1/Systems/R01-U14/PCIeDevices/1", "PCIe.1.0.LinkDegraded", "PCIe link width degraded from x16 to x4"))
+        elif scenario == "firmware_regression":
+            base.extend([
+                Event((now - timedelta(seconds=140)).isoformat(), "ok", "/redfish/v1/UpdateService/FirmwareInventory/R04-BMC", "Update.1.0.UpdateSuccessful", "R04 BMC firmware changed from 7.12.4 to 7.13.0"),
+                Event(now.isoformat(), "warning", "/redfish/v1/Chassis/R04/ThermalSubsystem/Fans/Zone2", "Thermal.1.0.FanSpeedLow", "Fan zone 2 speed diverged from peer racks"),
+            ])
+        elif scenario == "nvlink_degradation":
+            base.append(Event(now.isoformat(), "critical", "/redfish/v1/Systems/R01-U13/Processors/GPU3", "GPU.1.0.InterconnectDegraded", "GPU peer path throughput dropped below the learned envelope"))
+        elif scenario == "certificate_drift":
+            base.append(Event(now.isoformat(), "warning", "/redfish/v1/Managers/R03/NetworkProtocol/HTTPS/Certificates/1", "Security.1.0.CertificateExpiring", "BMC HTTPS certificate expires inside the policy window"))
         return base
 
     def series(self, scenario: str, points: int = 24) -> list[FleetSnapshot]:

@@ -21,8 +21,12 @@ class RedfishClient:
         "/redfish/v1",
         "/redfish/v1/Systems",
         "/redfish/v1/Chassis",
+        "/redfish/v1/Managers",
         "/redfish/v1/TelemetryService",
         "/redfish/v1/EventService",
+        "/redfish/v1/AccountService",
+        "/redfish/v1/TaskService",
+        "/redfish/v1/UpdateService",
         "/redfish/v1/UpdateService/FirmwareInventory",
     )
 
@@ -46,3 +50,14 @@ class RedfishClient:
             except Exception as exc:
                 resources.append(RedfishResource(uri, {"available": False, "error_type": type(exc).__name__}))
         return resources
+
+    def capability_matrix(self) -> list[dict]:
+        return [
+            {
+                "uri": resource.uri,
+                "available": resource.payload.get("available", True),
+                "odata_type": resource.payload.get("@odata.type"),
+                "name": resource.payload.get("Name"),
+            }
+            for resource in self.discover()
+        ]
