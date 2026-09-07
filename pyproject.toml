@@ -11,13 +11,22 @@ dependencies = ["fastapi>=0.115", "pydantic>=2.9", "uvicorn>=0.30"]
 
 [project.optional-dependencies]
 agent = ["langgraph>=0.3", "opentelemetry-sdk>=1.29"]
+training = [
+  "accelerate>=1.0",
+  "bitsandbytes>=0.45",
+  "datasets>=3.0",
+  "peft>=0.14",
+  "torch>=2.5",
+  "transformers>=4.48",
+  "trl>=0.15",
+]
 dev = ["pytest>=8.3", "httpx>=0.28"]
 
 [project.scripts]
 racklens = "racklens.cli:main"
 
 [tool.setuptools]
-package-dir = {"" = "backend"}
+package-dir = { "" = "backend" }
 
 [tool.setuptools.packages.find]
 where = ["backend"]
