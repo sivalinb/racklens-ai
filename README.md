@@ -21,6 +21,8 @@ The dashboard provides:
 - Interactive four-rack floor with 32 nodes and 256 simulated GPUs
 - Enlarged rack cabinets with redundant top-of-rack switches, activity LEDs, and inlet-to-exhaust airflow
 - Eight-GPU/NVSwitch topology with moving traffic packets
+- Grafana-style Redfish signal explorer that follows the selected rack or GPU
+- Power, thermal, health, fabric, threshold, source URI, and event-stream panels
 - Shared power, thermal, fabric-traffic, and clock timeline
 - Cooling, power-cap, PCIe, firmware, NVLink, certificate, and healthy scenarios
 - Evidence-backed AI investigation with competing hypotheses

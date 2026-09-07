@@ -1,25 +1,37 @@
 'use client';
 
 import { Cpu, Fan, MemoryStick, Network, Thermometer, Zap } from 'lucide-react';
-import { useState } from 'react';
 import type { Scenario, ScenarioKey } from '@/lib/demo-data';
 
-type Props = { scenario: Scenario; scenarioKey: ScenarioKey; running: boolean };
+type Props = {
+  scenario: Scenario;
+  scenarioKey: ScenarioKey;
+  running: boolean;
+  rackId: string;
+  selected: number;
+  onSelect: (gpu: number) => void;
+};
 
-export function GpuTopology({ scenario, scenarioKey, running }: Props) {
-  const [selected, setSelected] = useState(3);
+export function GpuTopology({
+  scenario,
+  scenarioKey,
+  running,
+  rackId,
+  selected,
+  onSelect,
+}: Props) {
   const affected =
-    scenarioKey === 'pcie'
-      ? [3]
-      : scenarioKey === 'healthy'
-        ? []
+    rackId !== scenario.rack || scenarioKey === 'healthy'
+      ? []
+      : scenarioKey === 'pcie'
+        ? [3]
         : [2, 3, 6, 7];
   const baseClock = scenario.metrics.clock.at(-1) ?? 1830;
   return (
     <article className="panel gpu-panel" id="gpu">
       <div className="panel-heading">
         <div>
-          <span className="eyebrow">SELECTED NODE · {scenario.rack}-U18</span>
+          <span className="eyebrow">SELECTED NODE · {rackId}-U18</span>
           <h2>8-GPU fabric topology</h2>
         </div>
         <span className="fabric-health">
@@ -53,7 +65,7 @@ export function GpuTopology({ scenario, scenarioKey, running }: Props) {
               <button
                 key={index}
                 className={`gpu-chip gpu-${index} ${hot ? 'gpu-affected' : ''} ${selected === index ? 'gpu-selected' : ''}`}
-                onClick={() => setSelected(index)}
+                onClick={() => onSelect(index)}
                 aria-label={`Inspect GPU ${index}`}
                 aria-pressed={selected === index}
               >

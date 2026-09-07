@@ -34,6 +34,10 @@ Redfish provides the resource model connecting physical systems, chassis, therma
 
 The browser product lab mirrors these layers at `/platform`. Static JSON manifests under `public/data/` make the capability and model-ops claims directly inspectable.
 
+## Signal observability surface
+
+The studio signal explorer follows the currently selected rack or GPU. Rack panels cover chassis power, power caps, supply voltage/current, inlet/exhaust temperature, fans, aggregate health, events, logs, top-of-rack traffic, and link errors. GPU panels cover PCIeDevice status and interface health plus optional OEM MetricReport values for board power, temperatures, clocks, utilization, and fabric throughput. Every chart exposes its Redfish resource URI and distinguishes standard resources from optional OEM telemetry.
+
 ## Safety boundary
 
 The Redfish client exposes `GET` only. UpdateService firmware inventory is readable, while reset, power control, configuration, firmware installation, composition, and virtual-media writes are outside the production connector. Guarded actions appear only as simulated capabilities. Approval records that a recommendation was reviewed; it does not turn the recommendation into an action.
