@@ -13,6 +13,7 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 The dashboard provides:
 
 - Narrative product homepage with an animated rack-to-evidence signal journey
+- Filterable 3D digital twin spanning data center, data hall, row, and rack views
 - Interactive four-rack floor with 32 nodes and 256 simulated GPUs
 - Enlarged rack cabinets with redundant top-of-rack switches, activity LEDs, and inlet-to-exhaust airflow
 - Eight-GPU/NVSwitch topology with moving traffic packets
@@ -89,14 +90,14 @@ npm run build
 
 ## API
 
-| Endpoint | Purpose |
-|---|---|
-| `GET /api/health` | Service and safety status |
-| `GET /api/scenarios` | Available deterministic incidents |
-| `GET /api/fleet/{scenario}` | Complete Redfish-shaped fleet snapshot |
-| `GET /api/events/{scenario}` | Server-Sent Events telemetry replay |
-| `POST /api/investigations/{scenario}` | Evidence-first investigation |
-| `POST /api/investigations/{id}/review` | Record human approval or rejection |
+| Endpoint                               | Purpose                                |
+| -------------------------------------- | -------------------------------------- |
+| `GET /api/health`                      | Service and safety status              |
+| `GET /api/scenarios`                   | Available deterministic incidents      |
+| `GET /api/fleet/{scenario}`            | Complete Redfish-shaped fleet snapshot |
+| `GET /api/events/{scenario}`           | Server-Sent Events telemetry replay    |
+| `POST /api/investigations/{scenario}`  | Evidence-first investigation           |
+| `POST /api/investigations/{id}/review` | Record human approval or rejection     |
 
 ## Evaluation
 

@@ -14,6 +14,10 @@ const gpu = readFileSync(
   new URL('../../components/gpu-topology.tsx', import.meta.url),
   'utf8',
 );
+const twin = readFileSync(
+  new URL('../../components/data-center-twin.tsx', import.meta.url),
+  'utf8',
+);
 const data = readFileSync(
   new URL('../../lib/demo-data.ts', import.meta.url),
   'utf8',
@@ -51,6 +55,24 @@ test('rack floor includes operational airflow and top-of-rack context', () => {
   assert.match(dashboard, /COLD INLET/);
   assert.match(dashboard, /HOT EXHAUST/);
   assert.match(css, /@keyframes rackBlink/);
+});
+
+test('digital twin filters the complete physical hierarchy', () => {
+  for (const filter of ['Data center', 'Data hall', 'Row']) {
+    assert.match(twin, new RegExp(filter));
+  }
+  for (const site of ['DEN-01', 'PHX-02', 'IAD-03']) {
+    assert.match(twin, new RegExp(site));
+  }
+});
+
+test('each facility view carries real data center infrastructure context', () => {
+  for (const object of ['Cooling plant', 'CRAC', 'Overhead busway', 'ToR']) {
+    assert.match(twin, new RegExp(object));
+  }
+  assert.match(css, /perspective: 1100px/);
+  assert.match(css, /transform-style: preserve-3d/);
+  assert.match(css, /@keyframes twinBlink/);
 });
 
 test('cross-route links use reliable document navigation on the public host', () => {
