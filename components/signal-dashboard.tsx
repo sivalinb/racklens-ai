@@ -57,8 +57,8 @@ function Sparkline({ signal }: { signal: RedfishSignal }) {
       className="signal-sparkline"
       viewBox="0 0 100 46"
       preserveAspectRatio="none"
+      aria-label={`${signal.label} recent trend`}
     >
-      <title>{signal.label} recent trend</title>
       <defs>
         <linearGradient id={`fill-${signal.id}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor={signal.color} stopOpacity=".3" />
