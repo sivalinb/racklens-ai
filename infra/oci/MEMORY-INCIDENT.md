@@ -38,4 +38,16 @@ This deliberately restarts the collector once; do not confuse its replacement co
 
 Validate continuing collector timestamps, both destination paths as configured, no new process restarts, no new memory-error counter increments, host RAM/disk/swap floors and API response health. A temporary collection gap during recreation is possible. Continue checking after normal traffic resumes; short observations do not prove all future workloads fit.
 
+## Actual repair deployment and validation
+
+Repair code [`a73c190`](https://github.com/sivalinb/racklens-ai/commit/a73c1909908fb975fc28ba7d07cc32a001083e1d) was deployed at **22:29:49 UTC** by replacing only the edge collector. Its image is `sha256:27f7244fc51a2fb5b2534b7f193de37ee9001d7c93e2f819e230522e8bd880b7`. The old image was retained as `infra-edge-collector:before-observability-20260908`, and the two source preimages were preserved privately on the VM. All environment values, limits, networks, ports, mounts and restart policy were compared in memory and remained unchanged; no secrets were printed.
+
+The remote checkout intentionally remains on its earlier base with pre-existing local repairs plus the reviewed two-file patch. It is not a clean checkout of the new GitHub commit. No whole-repository reset/pull, full-stack build, dependency download or database restart was used for this collector repair. The API, database, Grafana and OTel collector containers were left running.
+
+At the **22:43 UTC** follow-up, the database memory-error counter was still **66,204**, last event **22:21:33**; recent memory-profile records were down to 192/minute. Collector timestamps continued advancing and the replacement had no restart/OOM flag. Both configured destination settings were preserved, but hosted-destination receipt was **not independently verified** during this repair.
+
+The separate observatory gateway build left roughly 73 MiB of host swap allocated. Subsequent samples showed no active paging; this is not a zero-swap result. Existing allocation must be distinguished from new swap I/O or growth, and original fresh-install gates remain unchanged. Do not clear swap, drop caches or weaken memory controls to manufacture a passing check. This remains a small shared host, not a capacity or availability guarantee.
+
+In [CI run 34286031201](https://github.com/sivalinb/racklens-ai/actions/runs/34286031201), **28 Python tests and the 40-case evaluation passed**. The overall workflow is **not green**: the unrelated web `npm ci` step found `package.json`/`package-lock.json` out of sync (missing `@emnapi/runtime` and `@emnapi/core` 1.11.3). This repair changed no frontend dependency files. Frontend installation/build needs a separate lockfile repair; it did not block the dependency-preserving collector image update.
+
 References: [ClickHouse merge-block settings](https://clickhouse.com/docs/reference/settings/merge-tree-settings/merge-max), [vertical-merge eligibility](https://clickhouse.com/docs/reference/settings/merge-tree-settings/vertical-merge), [memory overcommit behavior](https://clickhouse.com/docs/concepts/features/configuration/settings/memory-overcommit).
