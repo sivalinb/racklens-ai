@@ -108,6 +108,15 @@ resource "oci_core_instance" "racklens" {
   compartment_id      = oci_identity_compartment.racklens.id
   display_name        = "racklens-edge"
   shape               = "VM.Standard.A1.Flex"
+  agent_config {
+    are_all_plugins_disabled = false
+    is_management_disabled   = false
+    is_monitoring_disabled   = false
+    plugins_config {
+      name          = "Bastion"
+      desired_state = "ENABLED"
+    }
+  }
   shape_config {
     ocpus         = 2
     memory_in_gbs = 12
