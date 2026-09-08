@@ -27,6 +27,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState } from 'react';
+import { SiteHeader } from '@/components/site-header';
 import {
   INCIDENTS,
   REDFISH_CAPABILITIES,
@@ -57,31 +58,15 @@ export function ProductPlatform() {
 
   return (
     <main className="platform-shell">
-      <header className="platform-nav">
-        <a className="brand-mark" href="/" aria-label="RackLens AI home">
-          <span className="brand-pulse">
-            <Activity />
+      <SiteHeader
+        activePath="/platform"
+        pageLabel="Product Lab"
+        actions={
+          <span className="platform-readonly">
+            <LockKeyhole /> READ-ONLY
           </span>
-          <div>
-            <strong>RackLens</strong>
-            <small>AI Reliability Studio</small>
-          </div>
-        </a>
-        <nav aria-label="Product navigation">
-          <a href="/">Home</a>
-          <a href="/studio">3D Studio</a>
-          <a href="/dashboard">Observability</a>
-          <a href="/ai-observability">AI Observability</a>
-          <a href="/cloud-lab">OCI Cloud Lab</a>
-          <a className="active" href="/platform">
-            Product Lab
-          </a>
-          <a href="/architecture">Architecture</a>
-        </nav>
-        <span className="platform-readonly">
-          <LockKeyhole /> READ-ONLY
-        </span>
-      </header>
+        }
+      />
 
       <section className="platform-hero">
         <div className="platform-hero-copy">

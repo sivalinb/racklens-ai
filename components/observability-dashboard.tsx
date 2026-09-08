@@ -2,7 +2,6 @@
 /* oxlint-disable next/no-html-link-for-pages -- Vinext production routing requires full document navigation between routes. */
 
 import {
-  Activity,
   Bell,
   Clock3,
   Cpu,
@@ -46,6 +45,7 @@ import {
   buildObservabilityCatalog,
   type ObservabilityGroup,
 } from '@/lib/observability-data';
+import { SiteHeader } from '@/components/site-header';
 
 const timeLabels = [
   '14:21',
@@ -365,31 +365,23 @@ export function ObservabilityDashboard() {
 
   return (
     <main className="observe-shell">
-      <header className="observe-appbar">
-        <a href="/" className="observe-logo" aria-label="RackLens home">
-          <span>
-            <Activity />
-          </span>
-          <strong>RackLens</strong>
-          <small>OBSERVE</small>
-        </a>
-        <button className="observe-search">
-          <Search /> Search dashboards and signals <kbd>⌘K</kbd>
-        </button>
-        <nav aria-label="Observability navigation">
-          <a href="/ai-observability">AI Observability</a>
-          <a href="/studio">3D Studio</a>
-          <a href="/cloud-lab">OCI Cloud Lab</a>
-          <a href="/platform">Product Lab</a>
-          <a href="/architecture">Architecture</a>
-          <button aria-label="Notifications">
-            <Bell />
-          </button>
-          <button aria-label="Settings">
-            <Settings />
-          </button>
-        </nav>
-      </header>
+      <SiteHeader
+        activePath="/dashboard"
+        pageLabel="Redfish Dashboard"
+        actions={
+          <>
+            <button className="observe-search">
+              <Search /> Search dashboards and signals <kbd>⌘K</kbd>
+            </button>
+            <button className="site-header-icon" aria-label="Notifications">
+              <Bell />
+            </button>
+            <button className="site-header-icon" aria-label="Settings">
+              <Settings />
+            </button>
+          </>
+        }
+      />
 
       <div className="observe-crumbbar">
         <div>

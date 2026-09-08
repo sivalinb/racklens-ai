@@ -13,6 +13,10 @@ const route = readFileSync(
   new URL('../../app/ai-observability/page.tsx', import.meta.url),
   'utf8',
 );
+const siteHeader = readFileSync(
+  new URL('../../components/site-header.tsx', import.meta.url),
+  'utf8',
+);
 const source = JSON.parse(
   readFileSync(
     new URL('../../public/data/langsmith-observability.json', import.meta.url),
@@ -22,9 +26,10 @@ const source = JSON.parse(
 
 test('AI observability has a dedicated route and product navigation', () => {
   assert.match(route, /LangSmithObservabilityDashboard/);
-  assert.match(dashboard, /href="\/dashboard"/);
-  assert.match(dashboard, /href="\/studio"/);
-  assert.match(dashboard, /href="\/platform"/);
+  assert.match(dashboard, /activePath="\/ai-observability"/);
+  assert.match(siteHeader, /href: '\/dashboard'/);
+  assert.match(siteHeader, /href: '\/studio'/);
+  assert.match(siteHeader, /href: '\/platform'/);
 });
 
 test('dashboard exposes Grafana-like variables and refresh controls', () => {

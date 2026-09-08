@@ -23,6 +23,7 @@ import {
   TimerReset,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { SiteHeader } from '@/components/site-header';
 
 type EvaluationRun = {
   runId: string;
@@ -141,32 +142,20 @@ export function CloudLab() {
 
   return (
     <main className="cloud-shell">
-      <header className="cloud-nav">
-        <a href="/" className="cloud-brand" aria-label="RackLens home">
-          <span>
-            <Cloud />
-          </span>
-          <div>
-            <strong>RackLens</strong>
-            <small>OCI RELIABILITY LAB</small>
-          </div>
-        </a>
-        <nav aria-label="Cloud lab navigation">
-          <a href="/studio">3D Studio</a>
-          <a href="/dashboard">Redfish Dashboard</a>
-          <a href="/ai-observability">AI Observability</a>
-          <a href="/platform">Product Lab</a>
-          <a href="/architecture">Architecture</a>
-        </nav>
-        <a
-          className="cloud-github"
-          href="https://github.com/sivalinb/racklens-ai/tree/main/infra/oci"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Code2 /> Deployment source <ExternalLink />
-        </a>
-      </header>
+      <SiteHeader
+        activePath="/cloud-lab"
+        pageLabel="OCI Cloud Lab"
+        actions={
+          <a
+            className="cloud-github"
+            href="https://github.com/sivalinb/racklens-ai/tree/main/infra/oci"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Code2 /> Deployment source <ExternalLink />
+          </a>
+        }
+      />
 
       <section className="cloud-hero">
         <div className="cloud-hero-copy">

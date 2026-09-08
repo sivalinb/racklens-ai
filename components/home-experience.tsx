@@ -14,6 +14,7 @@ import {
   Wind,
   Zap,
 } from 'lucide-react';
+import { SiteHeader } from '@/components/site-header';
 
 const rackUnits = Array.from({ length: 7 });
 
@@ -45,29 +46,15 @@ function MiniRack({ label, hot = false }: { label: string; hot?: boolean }) {
 export function HomeExperience() {
   return (
     <main className="home-shell">
-      <header className="home-nav">
-        <a className="brand-mark" href="/" aria-label="RackLens AI home">
-          <span className="brand-pulse">
-            <Activity />
-          </span>
-          <div>
-            <strong>RackLens</strong>
-            <small>AI Reliability Studio</small>
-          </div>
-        </a>
-        <nav aria-label="Home navigation">
-          <a href="/dashboard">Observability</a>
-          <a href="/ai-observability">AI Observability</a>
-          <a href="/cloud-lab">OCI Cloud Lab</a>
-          <a href="/platform">Product lab</a>
-          <a href="/architecture">Architecture</a>
-          <a href="#workflow">How it works</a>
-          <a href="#safety">Safety</a>
-        </nav>
-        <a className="home-nav-cta" href="/studio">
-          Launch live studio <ArrowRight />
-        </a>
-      </header>
+      <SiteHeader
+        activePath="/"
+        pageLabel="Home"
+        actions={
+          <a className="home-nav-cta" href="/studio">
+            Launch live studio <ArrowRight />
+          </a>
+        }
+      />
 
       <section className="home-hero">
         <div className="home-hero-copy">

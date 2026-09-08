@@ -14,13 +14,18 @@ const home = readFileSync(
   new URL('../../components/home-experience.tsx', import.meta.url),
   'utf8',
 );
+const siteHeader = readFileSync(
+  new URL('../../components/site-header.tsx', import.meta.url),
+  'utf8',
+);
 const css = readFileSync(
   new URL('../../app/globals.css', import.meta.url),
   'utf8',
 );
 
 test('dedicated observability route is reachable from product navigation', () => {
-  assert.match(home, /href="\/dashboard"/);
+  assert.match(home, /SiteHeader/);
+  assert.match(siteHeader, /href: '\/dashboard'/);
   assert.match(dashboard, /Redfish rack & GPU overview/);
 });
 

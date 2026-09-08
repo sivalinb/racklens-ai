@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { DataCenterTwin } from '@/components/data-center-twin';
 import { GpuTopology } from '@/components/gpu-topology';
 import { SignalDashboard } from '@/components/signal-dashboard';
+import { SiteHeader } from '@/components/site-header';
 import { TelemetryCharts } from '@/components/telemetry-charts';
 import { RACKS, SCENARIOS, type ScenarioKey } from '@/lib/demo-data';
 import type { SignalScope } from '@/lib/redfish-signals';
@@ -131,44 +132,25 @@ export function RackOverview() {
 
   return (
     <main className={`site-shell ${running ? 'is-running' : 'is-paused'}`}>
-      <header className="topbar">
-        <a className="brand-mark studio-brand" href="/">
-          <span className="brand-pulse">
-            <Activity />
-          </span>
-          <div>
-            <strong>RackLens</strong>
-            <small>AI Reliability Studio</small>
-          </div>
-        </a>
-        <nav aria-label="Primary navigation">
-          <a href="/">Home</a>
-          <a href="/platform">Product lab</a>
-          <a href="/dashboard">Observability</a>
-          <a href="/ai-observability">AI Observability</a>
-          <a href="/cloud-lab">OCI Cloud Lab</a>
-          <a href="/architecture">Architecture</a>
-          <a href="#digital-twin">Digital twin</a>
-          <a href="#fleet">Fleet</a>
-          <a href="#gpu">GPU fabric</a>
-          <a href="#telemetry">Telemetry</a>
-          <a href="#signals">Signals</a>
-          <a href="#architecture">How it works</a>
-        </nav>
-        <div className="header-actions">
-          <Badge className="live-badge">
-            <span className="live-dot" /> LIVE REPLAY
-          </Badge>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setRunning((v) => !v)}
-          >
-            {running ? <Pause /> : <Play />}
-            {running ? 'Pause' : 'Resume'}
-          </Button>
-        </div>
-      </header>
+      <SiteHeader
+        activePath="/studio"
+        pageLabel="3D Studio"
+        actions={
+          <>
+            <Badge className="live-badge">
+              <span className="live-dot" /> LIVE REPLAY
+            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRunning((v) => !v)}
+            >
+              {running ? <Pause /> : <Play />}
+              {running ? 'Pause' : 'Resume'}
+            </Button>
+          </>
+        }
+      />
 
       <section className="intro-strip">
         <div>

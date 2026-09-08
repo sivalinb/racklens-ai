@@ -5,7 +5,6 @@ import {
   Activity,
   Bell,
   BookOpenCheck,
-  BrainCircuit,
   Check,
   Clock3,
   Coins,
@@ -42,6 +41,7 @@ import {
   YAxis,
 } from 'recharts';
 import langsmithData from '@/public/data/langsmith-observability.json';
+import { SiteHeader } from '@/components/site-header';
 
 const palette = {
   green: '#73bf69',
@@ -368,31 +368,23 @@ export function LangSmithObservabilityDashboard() {
 
   return (
     <main className="observe-shell ls-shell">
-      <header className="observe-appbar ls-appbar">
-        <a href="/" className="observe-logo ls-logo" aria-label="RackLens home">
-          <span>
-            <BrainCircuit />
-          </span>
-          <strong>RackLens</strong>
-          <small>AI OBSERVE</small>
-        </a>
-        <button className="observe-search">
-          <Search /> Search traces, runs and evaluations <kbd>⌘K</kbd>
-        </button>
-        <nav aria-label="AI observability navigation">
-          <a href="/dashboard">Redfish Dashboard</a>
-          <a href="/studio">3D Studio</a>
-          <a href="/cloud-lab">OCI Cloud Lab</a>
-          <a href="/platform">Product Lab</a>
-          <a href="/architecture">Architecture</a>
-          <button aria-label="Notifications">
-            <Bell />
-          </button>
-          <button aria-label="Settings">
-            <Settings />
-          </button>
-        </nav>
-      </header>
+      <SiteHeader
+        activePath="/ai-observability"
+        pageLabel="AI Observability"
+        actions={
+          <>
+            <button className="observe-search">
+              <Search /> Search traces, runs and evaluations <kbd>⌘K</kbd>
+            </button>
+            <button className="site-header-icon" aria-label="Notifications">
+              <Bell />
+            </button>
+            <button className="site-header-icon" aria-label="Settings">
+              <Settings />
+            </button>
+          </>
+        }
+      />
 
       <div className="observe-crumbbar">
         <div>

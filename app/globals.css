@@ -14,6 +14,329 @@
   border: 0;
 }
 
+/* Shared, hierarchical product navigation */
+.site-header {
+  position: sticky;
+  z-index: 100;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(230px, auto) minmax(340px, 1fr) auto;
+  min-height: 68px;
+  align-items: center;
+  gap: clamp(18px, 3vw, 44px);
+  padding: 0 clamp(18px, 4vw, 64px);
+  color: #eaf4ff;
+  border-bottom: 1px solid rgb(91 132 177 / 28%);
+  background: rgb(6 12 24 / 94%);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(18px);
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+.site-header,
+.site-header * {
+  box-sizing: border-box;
+}
+
+.site-header-identity,
+.site-header-brand,
+.site-primary-nav,
+.site-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.site-header-identity {
+  min-width: 0;
+  gap: 12px;
+}
+
+.site-header-brand {
+  flex: none;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header-brand > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #66f0ca;
+  border: 1px solid #286a66;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #0c3035, #101b34);
+  box-shadow: 0 0 24px rgb(76 222 199 / 13%);
+}
+
+.site-header-brand svg {
+  width: 18px;
+}
+
+.site-header-brand div {
+  display: grid;
+}
+
+.site-header-brand strong {
+  color: #f2f7ff;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+}
+
+.site-header-brand small {
+  color: #729298;
+  font:
+    700 9px/1.2 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.13em;
+}
+
+.site-header-context {
+  overflow: hidden;
+  max-width: 145px;
+  padding: 5px 8px;
+  color: #93b3c9;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid #243d58;
+  border-radius: 999px;
+  background: #0b192a;
+  font:
+    700 10px/1 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.site-primary-nav {
+  justify-content: center;
+  gap: 7px;
+}
+
+.site-primary-nav > a,
+.site-menu > summary {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  color: #98aabc;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  list-style: none;
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.site-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-menu > summary svg {
+  width: 14px;
+  transition: transform 160ms ease;
+}
+
+.site-primary-nav > a:hover,
+.site-primary-nav > a:focus-visible,
+.site-menu > summary:hover,
+.site-menu > summary:focus-visible,
+.site-primary-nav > a.is-active,
+.site-menu.is-active > summary,
+.site-menu[open] > summary {
+  color: #f2f8ff;
+  border-color: #2a4664;
+  background: #102037;
+  outline: none;
+}
+
+.site-menu[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.site-menu {
+  position: relative;
+}
+
+.site-submenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  display: grid;
+  width: 300px;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #29445f;
+  border-radius: 10px;
+  background: #091524;
+  box-shadow: 0 24px 64px rgb(0 0 0 / 48%);
+  transform: translateX(-50%);
+}
+
+.site-submenu::before {
+  position: absolute;
+  top: -11px;
+  right: 0;
+  left: 0;
+  height: 12px;
+  content: '';
+}
+
+.site-submenu a {
+  display: grid;
+  gap: 3px;
+  padding: 10px 11px;
+  color: #dceafa;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  text-decoration: none;
+}
+
+.site-submenu a:hover,
+.site-submenu a:focus-visible,
+.site-submenu a.is-active {
+  border-color: #2b516b;
+  background: #10263a;
+  outline: none;
+}
+
+.site-submenu a.is-active {
+  box-shadow: inset 3px 0 #56dabd;
+}
+
+.site-submenu a span {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.site-submenu a small {
+  color: #8198aa;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.site-header-actions {
+  min-width: 0;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.site-header-icon {
+  display: grid;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  color: #b7c7d8;
+  border: 1px solid #2b3d50;
+  border-radius: 6px;
+  background: #0d1827;
+}
+
+.site-header-icon:hover {
+  color: #fff;
+  background: #17283c;
+}
+
+.site-header-actions > button svg {
+  width: 15px;
+}
+
+@media (max-width: 1180px) {
+  .site-header-actions .observe-search {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 16px;
+    padding: 9px 16px 0;
+  }
+
+  .site-primary-nav {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 7px 0 8px;
+    border-top: 1px solid rgb(91 132 177 / 18%);
+    scrollbar-width: none;
+  }
+
+  .site-primary-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-header-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .site-submenu {
+    position: fixed;
+    top: 103px;
+    left: 12px;
+    width: min(320px, calc(100vw - 24px));
+    transform: none;
+  }
+
+  .site-menu:nth-of-type(2) .site-submenu,
+  .site-menu:nth-of-type(3) .site-submenu {
+    right: 12px;
+    left: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .site-header-brand small,
+  .site-header-context {
+    display: none;
+  }
+
+  .site-primary-nav {
+    justify-content: space-between;
+    gap: 2px;
+  }
+
+  .site-primary-nav > a,
+  .site-menu > summary {
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .site-header-actions .home-nav-cta,
+  .site-header-actions .cloud-github,
+  .site-header-actions .arch-nav-action {
+    width: 36px;
+    min-width: 36px;
+    padding: 0;
+    overflow: hidden;
+    color: transparent;
+    font-size: 0;
+  }
+
+  .site-header-actions .home-nav-cta svg,
+  .site-header-actions .cloud-github svg,
+  .site-header-actions .arch-nav-action svg {
+    color: #dff6ff;
+  }
+
+  .site-header-actions .platform-readonly {
+    font-size: 0;
+  }
+}
+
 /* RackLens system architecture */
 .arch-shell {
   --arch-bg: #07101c;

@@ -22,6 +22,7 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react';
+import { SiteHeader } from '@/components/site-header';
 
 const stages = [
   {
@@ -162,27 +163,15 @@ const summary = [
 export function ArchitectureFlow() {
   return (
     <main className="arch-shell">
-      <header className="arch-nav">
-        <a className="arch-brand" href="/" aria-label="RackLens home">
-          <span>
-            <Activity />
-          </span>
-          <div>
-            <strong>RackLens</strong>
-            <small>SYSTEM MAP</small>
-          </div>
-        </a>
-        <nav aria-label="Architecture navigation">
-          <a href="/studio">3D Studio</a>
-          <a href="/dashboard">Redfish Dashboard</a>
-          <a href="/ai-observability">AI Observability</a>
-          <a href="/cloud-lab">OCI Cloud Lab</a>
-          <a href="/platform">Product Lab</a>
-        </nav>
-        <a className="arch-nav-action" href="/dashboard">
-          Open live signals <ArrowRight />
-        </a>
-      </header>
+      <SiteHeader
+        activePath="/architecture"
+        pageLabel="Architecture"
+        actions={
+          <a className="arch-nav-action" href="/dashboard">
+            Open live signals <ArrowRight />
+          </a>
+        }
+      />
 
       <section className="arch-hero">
         <div>

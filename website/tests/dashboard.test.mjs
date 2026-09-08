@@ -10,6 +10,10 @@ const home = readFileSync(
   new URL('../../components/home-experience.tsx', import.meta.url),
   'utf8',
 );
+const siteHeader = readFileSync(
+  new URL('../../components/site-header.tsx', import.meta.url),
+  'utf8',
+);
 const gpu = readFileSync(
   new URL('../../components/gpu-topology.tsx', import.meta.url),
   'utf8',
@@ -87,7 +91,8 @@ test('cross-route links use reliable document navigation on the public host', ()
   assert.doesNotMatch(home, /next\/link/);
   assert.doesNotMatch(dashboard, /next\/link/);
   assert.match(home, /href="\/studio"/);
-  assert.match(dashboard, /href="\/"/);
+  assert.match(dashboard, /SiteHeader/);
+  assert.match(siteHeader, /href="\/"/);
 });
 
 test('safety boundary is explicit', () => {
