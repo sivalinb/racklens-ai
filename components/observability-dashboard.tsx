@@ -454,7 +454,7 @@ export function ObservabilityDashboard() {
                 setHall(facilities[value][0]);
               }}
             >
-              <option value="OCI-PHX-01">OCI-PHX-01 · OCI live</option>
+              <option value="OCI-PHX-01">OCI-PHX-01 · cloud lab</option>
               <option value="DEN-01">DEN-01</option>
               <option value="SJC-02">SJC-02</option>
               <option value="IAD-01">IAD-01</option>

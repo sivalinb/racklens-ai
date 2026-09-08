@@ -43,7 +43,7 @@ test('Redfish dashboard queries a persistent time-series API with fallback', () 
 });
 
 test('OCI edge telemetry is a first-class dashboard target with provenance', () => {
-  assert.match(dashboard, /OCI-PHX-01 · OCI live/);
+  assert.match(dashboard, /OCI-PHX-01 · cloud lab/);
   assert.match(dashboard, /href={telemetryQueryUrl}/);
   assert.match(telemetryStore, /'OCI-PHX-01': \['Hall A'\]/);
   assert.match(telemetryStore, /oci-edge-live/);
