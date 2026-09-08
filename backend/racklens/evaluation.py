@@ -172,7 +172,11 @@ class OCIArtifactPublisher:
         self.compartment_id = compartment_id
         self.region = region
         self.object_storage = oci.object_storage.ObjectStorageClient({}, signer=signer)
-        self.monitoring = oci.monitoring.MonitoringClient({}, signer=signer)
+        self.monitoring = oci.monitoring.MonitoringClient(
+            {"region": region},
+            signer=signer,
+            service_endpoint=f"https://telemetry-ingestion.{region}.oraclecloud.com",
+        )
 
     def publish(self, summary: EvaluationSummary, artifact_path: str | Path) -> str:
         namespace = self.object_storage.get_namespace().data

@@ -2,12 +2,12 @@ import unittest
 import json
 from datetime import UTC, datetime
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from racklens.agent import ReliabilityAgent
 from racklens.capabilities import capability_catalog, capability_summary
 from racklens.collector import SimulatorTelemetryCollector
-from racklens.evaluation import EXPECTED_TOP_CAUSES, publish_hosted, run_evaluation
+from racklens.evaluation import OCIArtifactPublisher, EXPECTED_TOP_CAUSES, publish_hosted, run_evaluation
 from racklens.knowledge import LocalHybridRetriever
 from racklens.simulator import RackSimulator, SCENARIOS
 from racklens.training import build_training_examples, export_training_dataset, model_ops_manifest, train_adapter
@@ -162,6 +162,17 @@ class TelemetryStoreTests(unittest.TestCase):
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_oci_publisher_uses_the_monitoring_ingestion_endpoint(self):
+        oci = MagicMock()
+        with patch.dict("sys.modules", {"oci": oci}):
+            OCIArtifactPublisher("evaluations", "ocid1.compartment.test", "us-phoenix-1")
+
+        oci.monitoring.MonitoringClient.assert_called_once_with(
+            {"region": "us-phoenix-1"},
+            signer=oci.auth.signers.InstancePrincipalsSecurityTokenSigner.return_value,
+            service_endpoint="https://telemetry-ingestion.us-phoenix-1.oraclecloud.com",
+        )
+
     def test_regression_suite_writes_a_complete_auditable_artifact(self):
         with TemporaryDirectory() as directory:
             summary, cases = run_evaluation(directory)
