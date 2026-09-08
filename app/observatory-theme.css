@@ -1,0 +1,613 @@
+:root {
+  --observatory-paper: #f7faf6;
+  --observatory-ink: #123d33;
+  --observatory-green: #2d795f;
+  --observatory-panel: #103d33;
+  --observatory-panel-deep: #0b2d27;
+  --observatory-mint: #e7f0e5;
+  --observatory-mint-strong: #c8e7ce;
+  --observatory-line: #c5d9cb;
+  --observatory-muted: #526a62;
+  --observatory-white: #ffffff;
+}
+
+body {
+  background: var(--observatory-paper);
+}
+
+/* Calm, consistent navigation across every route. */
+.site-header {
+  color: var(--observatory-ink);
+  border-bottom-color: #dce6df;
+  background: rgb(247 250 246 / 96%);
+  box-shadow: 0 8px 30px rgb(18 61 51 / 5%);
+}
+
+.site-header-brand {
+  color: var(--observatory-ink);
+}
+
+.site-header-brand > span {
+  color: #d8ffe3;
+  border-color: var(--observatory-panel);
+  background: var(--observatory-panel);
+  box-shadow: none;
+}
+
+.site-header-brand strong {
+  color: var(--observatory-ink);
+}
+
+.site-header-brand small {
+  color: #638277;
+}
+
+.site-header-context {
+  color: #356957;
+  border-color: #c8d9cc;
+  background: #edf4eb;
+}
+
+.site-primary-nav > a,
+.site-menu > summary {
+  color: #365b50;
+}
+
+.site-primary-nav > a:hover,
+.site-primary-nav > a:focus-visible,
+.site-menu > summary:hover,
+.site-menu > summary:focus-visible,
+.site-primary-nav > a.is-active,
+.site-menu.is-active > summary,
+.site-menu[open] > summary {
+  color: var(--observatory-ink);
+  border-color: #b9d0c0;
+  background: #e7f0e5;
+}
+
+.site-submenu {
+  border-color: #c8d9cc;
+  background: #fcfefb;
+  box-shadow: 0 24px 64px rgb(18 61 51 / 18%);
+}
+
+.site-submenu a {
+  color: var(--observatory-ink);
+}
+
+.site-submenu a:hover,
+.site-submenu a:focus-visible,
+.site-submenu a.is-active {
+  border-color: #b8d2bf;
+  background: #e7f0e5;
+}
+
+.site-submenu a.is-active {
+  box-shadow: inset 3px 0 var(--observatory-green);
+}
+
+.site-submenu a small {
+  color: var(--observatory-muted);
+}
+
+.site-header-icon {
+  color: #45685d;
+  border-color: #cad8ce;
+  background: #fff;
+}
+
+.site-header-icon:hover {
+  color: var(--observatory-ink);
+  background: var(--observatory-mint);
+}
+
+.site-header .observe-search {
+  color: #688078;
+  border-color: #ccd9d0;
+  background: #fff;
+}
+
+.site-header .observe-search kbd {
+  color: #527066;
+  border-color: #c8d6cd;
+  background: #edf3ec;
+}
+
+.site-header .home-nav-cta,
+.site-header .arch-nav-action,
+.site-header .cloud-github {
+  color: #f5fff8;
+  border-color: var(--observatory-panel);
+  background: var(--observatory-panel);
+}
+
+.site-header .platform-readonly {
+  color: var(--observatory-green);
+}
+
+/* Public home: editorial canvas plus one focused live-system surface. */
+.home-shell {
+  color: var(--observatory-ink);
+  background:
+    radial-gradient(
+      circle at 75% 7%,
+      rgb(190 224 198 / 42%),
+      transparent 28rem
+    ),
+    var(--observatory-paper);
+}
+
+.home-hero {
+  width: min(1536px, 100%);
+  margin: 0 auto;
+}
+
+.home-hero::before {
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgb(45 121 95 / 12%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(45 121 95 / 12%) 1px, transparent 1px);
+}
+
+.home-kicker,
+.home-section-heading > span {
+  color: var(--observatory-green);
+}
+
+.home-kicker span {
+  background: #4c9f78;
+  box-shadow: 0 0 0 5px rgb(76 159 120 / 12%);
+}
+
+.home-hero h1,
+.home-section-heading h2,
+.home-capability-grid h3,
+.home-workflow-track h3 {
+  color: var(--observatory-ink);
+}
+
+.home-hero h1 {
+  font-weight: 760;
+  letter-spacing: -0.058em;
+}
+
+.home-hero h1 em {
+  color: var(--observatory-green);
+  text-shadow: none;
+}
+
+.home-hero-copy > p,
+.home-section-heading p,
+.home-capability-grid p,
+.home-workflow-track p {
+  color: var(--observatory-muted);
+}
+
+.home-hero-copy > p {
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.home-primary {
+  color: #f4fff7;
+  background: var(--observatory-green);
+  box-shadow: 0 12px 32px rgb(18 61 51 / 14%);
+}
+
+.home-primary:hover {
+  background: #24674f;
+}
+
+.home-secondary,
+.home-trust-row {
+  color: #48685d;
+}
+
+.home-system-map {
+  border-color: #205849;
+  border-radius: 21px;
+  background:
+    radial-gradient(circle at 76% 0%, rgb(97 182 130 / 18%), transparent 42%),
+    linear-gradient(
+      145deg,
+      var(--observatory-panel),
+      var(--observatory-panel-deep)
+    );
+  box-shadow: 0 30px 70px rgb(18 61 51 / 20%);
+}
+
+.home-map-topline,
+.home-map-footer {
+  color: #9fc2b3;
+  border-color: #2a5a4c;
+}
+
+.home-map-topline b {
+  color: #e2f5e8;
+}
+
+.home-mini-rack,
+.home-intelligence-stage,
+.home-decision-stage,
+.home-signal-cards div,
+.home-decision-stage li {
+  border-color: #356758;
+  background: rgb(7 39 32 / 72%);
+}
+
+.home-tor,
+.home-correlation,
+.home-human-gate {
+  border-color: #427564;
+  background: rgb(21 72 58 / 84%);
+}
+
+.home-map-footer {
+  background: #092b25;
+}
+
+.home-proof {
+  width: min(1408px, calc(100% - clamp(40px, 10vw, 156px)));
+  margin-inline: auto;
+  color: var(--observatory-ink);
+  border-color: var(--observatory-line);
+  background: var(--observatory-white);
+  box-shadow: 0 18px 50px rgb(18 61 51 / 6%);
+}
+
+.home-proof div,
+.home-proof div:nth-child(-n + 2) {
+  border-color: var(--observatory-line);
+}
+
+.home-proof strong {
+  color: var(--observatory-ink);
+}
+
+.home-proof span {
+  color: #647a72;
+}
+
+.home-platform,
+.home-workflow {
+  width: min(1536px, 100%);
+  margin-inline: auto;
+}
+
+.home-capability-grid article {
+  color: var(--observatory-ink);
+  border-color: var(--observatory-line);
+  background: var(--observatory-white);
+  box-shadow: 0 16px 45px rgb(18 61 51 / 5%);
+}
+
+.home-capability-grid article:nth-child(2) {
+  background: var(--observatory-mint);
+}
+
+.home-capability-grid article > span {
+  color: var(--observatory-green);
+  border-color: #b9d1bf;
+  background: #e6f2e5;
+}
+
+.home-capability-grid small,
+.home-capability-grid article > b {
+  color: #4b7766;
+}
+
+.home-workflow-track {
+  border-color: #a9c5b2;
+}
+
+.home-workflow-track article > b {
+  color: #5d796f;
+}
+
+.home-workflow-track article > i {
+  border-color: var(--observatory-paper);
+  background: var(--observatory-green);
+  box-shadow: 0 0 0 5px rgb(45 121 95 / 10%);
+}
+
+.home-safety {
+  color: var(--observatory-ink);
+  border-color: var(--observatory-line);
+  background:
+    radial-gradient(circle at 90% 5%, rgb(169 211 180 / 38%), transparent 38%),
+    var(--observatory-mint);
+  box-shadow: 0 24px 70px rgb(18 61 51 / 8%);
+}
+
+.home-safety > div,
+.home-safety > p {
+  color: #41685a;
+}
+
+.home-safety > a {
+  color: #f4fff7;
+  border-color: var(--observatory-panel);
+  background: var(--observatory-panel);
+}
+
+.home-footer {
+  color: #6d827b;
+  border-color: #dce6df;
+  background: #f1f5ef;
+}
+
+/* 3D Studio: light editorial frame around the existing animated operations canvas. */
+.site-shell {
+  background:
+    radial-gradient(
+      circle at 90% 0%,
+      rgb(193 225 201 / 38%),
+      transparent 28rem
+    ),
+    var(--observatory-paper);
+}
+
+.intro-strip {
+  width: min(1536px, 100%);
+  margin-inline: auto;
+  color: var(--observatory-ink);
+}
+
+.intro-strip h1 {
+  color: var(--observatory-ink);
+  font-weight: 720;
+}
+
+.intro-strip p {
+  color: var(--observatory-muted);
+  font-size: 15px;
+}
+
+.intro-strip .eyebrow {
+  color: var(--observatory-green);
+}
+
+.clock {
+  color: var(--observatory-ink);
+  border-color: var(--observatory-line);
+  background: var(--observatory-mint);
+}
+
+.clock span,
+.clock small {
+  color: #547168;
+}
+
+.clock strong {
+  color: var(--observatory-ink);
+}
+
+.scenario-bar,
+.kpi-card,
+.panel {
+  border-color: #2c5a4c;
+  background: linear-gradient(145deg, #123f35, #0a2d27);
+  box-shadow: 0 18px 50px rgb(18 61 51 / 12%);
+}
+
+.scenario-bar {
+  width: min(1408px, calc(100% - clamp(36px, 8vw, 128px)));
+  margin-inline: auto;
+}
+
+.scenario-buttons button:hover,
+.scenario-buttons button.active {
+  border-color: #5a907b;
+  background: #1f5a48;
+}
+
+/* Product and cloud labs use the same paper/card rhythm. */
+.platform-shell,
+.cloud-shell {
+  color: var(--observatory-ink);
+  background:
+    radial-gradient(
+      circle at 84% 3%,
+      rgb(194 225 200 / 44%),
+      transparent 28rem
+    ),
+    var(--observatory-paper);
+}
+
+.platform-hero,
+.cloud-hero {
+  width: min(1536px, 100%);
+  margin-inline: auto;
+}
+
+.platform-hero::before {
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgb(45 121 95 / 13%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(45 121 95 / 13%) 1px, transparent 1px);
+}
+
+.platform-kicker,
+.cloud-kicker,
+.platform-section-heading > div > span,
+.cloud-architecture header > span,
+.cloud-week-section header > span,
+.cloud-resource-panel header > span,
+.cloud-proof-panel > span {
+  color: var(--observatory-green);
+}
+
+.platform-hero h1,
+.cloud-hero-copy h1,
+.platform-section-heading h2,
+.cloud-architecture h2,
+.cloud-week-section h2,
+.cloud-resource-panel h2,
+.cloud-proof-panel h2 {
+  color: var(--observatory-ink);
+  font-weight: 740;
+}
+
+.platform-hero h1 em {
+  color: var(--observatory-green);
+}
+
+.platform-hero-copy > p,
+.cloud-hero-copy > p,
+.platform-section-heading > p,
+.cloud-architecture header p,
+.cloud-guardrails {
+  color: var(--observatory-muted);
+}
+
+.platform-hero-copy > p,
+.cloud-hero-copy > p {
+  font-size: 17px;
+}
+
+.platform-hero-actions a:first-child,
+.cloud-hero-actions a:first-child {
+  color: #f5fff8;
+  border-color: var(--observatory-green);
+  background: var(--observatory-green);
+}
+
+.platform-hero-actions a:not(:first-child),
+.cloud-hero-actions a:not(:first-child) {
+  color: var(--observatory-ink);
+  border-color: #b8cdc0;
+  background: #fff;
+}
+
+.platform-flow,
+.cloud-live-card {
+  border-color: #275d4c;
+  background:
+    radial-gradient(circle at 80% 0%, rgb(104 191 137 / 15%), transparent 44%),
+    var(--observatory-panel);
+  box-shadow: 0 30px 70px rgb(18 61 51 / 18%);
+}
+
+.platform-flow-node,
+.cloud-flow article,
+.cloud-week-grid article,
+.cloud-resource-panel,
+.cloud-proof-panel {
+  border-color: #356b59;
+  background: #0d352d;
+}
+
+.platform-stats,
+.cloud-metrics {
+  color: var(--observatory-ink);
+  border-color: var(--observatory-line);
+  background: var(--observatory-white);
+}
+
+.platform-stats div,
+.cloud-metrics article {
+  border-color: var(--observatory-line);
+}
+
+.platform-stats strong,
+.cloud-metrics article strong {
+  color: var(--observatory-ink);
+}
+
+.platform-stats span,
+.cloud-metrics article span {
+  color: #5b746b;
+}
+
+.platform-section {
+  border-color: #d8e4db;
+}
+
+.platform-footer,
+.cloud-footer {
+  color: #677d75;
+  border-color: #d8e4db;
+  background: #edf3eb;
+}
+
+/* Architecture: a light explanation around the preserved animated map. */
+.arch-shell {
+  --arch-bg: var(--observatory-paper);
+  color: var(--observatory-ink);
+  background:
+    radial-gradient(
+      circle at 68% 0%,
+      rgb(192 224 199 / 48%),
+      transparent 30rem
+    ),
+    linear-gradient(rgb(45 121 95 / 6%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(45 121 95 / 6%) 1px, transparent 1px),
+    var(--observatory-paper);
+  background-size:
+    auto,
+    40px 40px,
+    40px 40px,
+    auto;
+}
+
+.arch-hero h1 {
+  color: var(--observatory-ink);
+  font-weight: 750;
+}
+
+.arch-hero h1 em,
+.arch-hero p {
+  color: var(--observatory-green);
+}
+
+.arch-hero div > small {
+  color: var(--observatory-muted);
+}
+
+.arch-hero aside {
+  border-color: #b8d0bf;
+  background: var(--observatory-mint);
+  box-shadow: 0 18px 45px rgb(18 61 51 / 8%);
+}
+
+.arch-hero aside span {
+  color: #527168;
+}
+
+.arch-hero aside strong {
+  color: var(--observatory-ink);
+}
+
+.arch-map {
+  padding-top: 18px;
+  color: #dcecff;
+  border: 1px solid #285d4d;
+  border-radius: 21px;
+  background:
+    radial-gradient(circle at 74% 0%, rgb(94 185 128 / 13%), transparent 38%),
+    var(--observatory-panel-deep);
+  box-shadow: 0 30px 80px rgb(18 61 51 / 16%);
+}
+
+.arch-map .arch-layer {
+  border-color: #315f52;
+  background: rgb(13 48 41 / 78%);
+}
+
+.arch-summary {
+  color: #dcecff;
+  border-color: #315f52;
+  background: var(--observatory-panel);
+}
+
+.arch-footer {
+  color: #607970;
+  border-color: #d7e3da;
+  background: #eef4ec;
+}
+
+@media (max-width: 900px) {
+  .site-primary-nav {
+    border-top-color: #dde7df;
+  }
+}
