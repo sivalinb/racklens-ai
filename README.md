@@ -16,6 +16,37 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 > The public website persists live Redfish-shaped demo telemetry and AI traces in a server-side time-series store, with an explicit replay fallback. The Python edge service can collect from an authorized Redfish endpoint and send batches to ClickHouse or the hosted ingestion API. No Redfish write operation is implemented.
 
+## Visual product walkthrough
+
+The public experience follows one incident from physical infrastructure to a reviewed AI recommendation. Select any screenshot to open that live product surface.
+
+<table>
+  <tr>
+    <td width="50%">
+      <a href="https://racklens-ai.siva-babu.chatgpt.site/architecture"><img src="docs/assets/screenshots/architecture-flow.png" alt="Animated RackLens architecture from rack signal to reviewed decision"></a><br>
+      <strong>1. Understand the system</strong><br>
+      Follow the implemented control, telemetry, evidence, tracing, evaluation, and human-review paths.
+    </td>
+    <td width="50%">
+      <a href="https://racklens-ai.siva-babu.chatgpt.site/studio"><img src="docs/assets/screenshots/three-dimensional-studio.png" alt="RackLens 3D data-center digital twin"></a><br>
+      <strong>2. Locate the physical issue</strong><br>
+      Drill from data center to hall, row, rack, node, and GPU while animated airflow and traffic preserve context.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <a href="https://racklens-ai.siva-babu.chatgpt.site/dashboard"><img src="docs/assets/screenshots/redfish-dashboard.png" alt="Grafana-style RackLens Redfish telemetry dashboard"></a><br>
+      <strong>3. Inspect Redfish evidence</strong><br>
+      Compare live persisted power, thermal, GPU, fabric, health, and event signals with thresholds and provenance.
+    </td>
+    <td width="50%">
+      <a href="https://racklens-ai.siva-babu.chatgpt.site/ai-observability"><img src="docs/assets/screenshots/ai-observability.png" alt="RackLens LangSmith-shaped AI observability dashboard"></a><br>
+      <strong>4. Review the AI decision path</strong><br>
+      Inspect nested traces, retrieval quality, latency, cost, evaluations, and the safety gate before human approval.
+    </td>
+  </tr>
+</table>
+
 ## Product experience
 
 The dashboard provides:

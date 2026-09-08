@@ -2,6 +2,34 @@
 
 The animated, implementation-linked version of this map is available at the public [`/architecture`](https://racklens-ai.siva-babu.chatgpt.site/architecture) route.
 
+## Visual flow through the live product
+
+These screenshots are captured from the public deployment and correspond to the end-to-end flow below.
+
+### 1. Map the complete signal-to-decision path
+
+[![RackLens animated system architecture](assets/screenshots/architecture-flow.png)](https://racklens-ai.siva-babu.chatgpt.site/architecture)
+
+The architecture surface connects the operator plane, bounded investigation graph, Redfish and cloud integrations, evidence stores, observability, evaluation, and the human-review boundary.
+
+### 2. Scope the incident in the 3D physical hierarchy
+
+[![RackLens 3D data-center digital twin](assets/screenshots/three-dimensional-studio.png)](https://racklens-ai.siva-babu.chatgpt.site/studio)
+
+The Studio preserves data-center, hall, row, rack, server, GPU, top-of-rack switch, airflow, power, and traffic context as the operator drills into the affected asset.
+
+### 3. Validate the underlying Redfish telemetry
+
+[![RackLens Redfish signal dashboard](assets/screenshots/redfish-dashboard.png)](https://racklens-ai.siva-babu.chatgpt.site/dashboard)
+
+The Grafana-style dashboard queries the persisted time-series path and exposes target filters, refresh controls, thresholds, legends, source provenance, and hardware signal families.
+
+### 4. Inspect the AI trace and evaluation evidence
+
+[![RackLens AI observability dashboard](assets/screenshots/ai-observability.png)](https://racklens-ai.siva-babu.chatgpt.site/ai-observability)
+
+The AI observability surface adds nested run traces, RAG quality, evaluation results, latency, cost, token use, Redfish correlation, and safety gates so the recommendation remains reviewable.
+
 ## End-to-end product flow
 
 ```mermaid
