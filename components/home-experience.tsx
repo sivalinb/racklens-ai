@@ -60,6 +60,7 @@ export function HomeExperience() {
           <a href="/ai-observability">AI Observability</a>
           <a href="/cloud-lab">OCI Cloud Lab</a>
           <a href="/platform">Product lab</a>
+          <a href="/architecture">Architecture</a>
           <a href="#workflow">How it works</a>
           <a href="#safety">Safety</a>
         </nav>

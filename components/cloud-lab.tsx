@@ -103,7 +103,12 @@ const resources = [
   ['Ampere A1', '2 OCPU · 12 GB', 'Collector, API and evaluators', Server],
   ['Block storage', '100 GB configured', 'ClickHouse raw + rollups', HardDrive],
   ['Object Storage', 'Private bucket', 'Datasets and eval artifacts', Database],
-  ['Instance principal', 'No API key on disk', 'Object and metric publishing', KeyRound],
+  [
+    'Instance principal',
+    'No API key on disk',
+    'Object and metric publishing',
+    KeyRound,
+  ],
 ] as const;
 
 function percent(value: number) {
@@ -112,9 +117,9 @@ function percent(value: number) {
 
 export function CloudLab() {
   const [payload, setPayload] = useState<EvaluationPayload | null>(null);
-  const [sourceState, setSourceState] = useState<'loading' | 'live' | 'fallback'>(
-    'loading',
-  );
+  const [sourceState, setSourceState] = useState<
+    'loading' | 'live' | 'fallback'
+  >('loading');
 
   const load = () => {
     setSourceState('loading');
@@ -151,6 +156,7 @@ export function CloudLab() {
           <a href="/dashboard">Redfish Dashboard</a>
           <a href="/ai-observability">AI Observability</a>
           <a href="/platform">Product Lab</a>
+          <a href="/architecture">Architecture</a>
         </nav>
         <a
           className="cloud-github"
@@ -198,10 +204,14 @@ export function CloudLab() {
           <header>
             <div>
               <span className={cloudConnected ? 'connected' : 'ready'} />
-              <strong>{cloudConnected ? 'OCI CONNECTED' : 'READY FOR OCI'}</strong>
+              <strong>
+                {cloudConnected ? 'OCI CONNECTED' : 'READY FOR OCI'}
+              </strong>
             </div>
             <button onClick={load} aria-label="Refresh OCI evaluation status">
-              <RefreshCw className={sourceState === 'loading' ? 'spinning' : ''} />
+              <RefreshCw
+                className={sourceState === 'loading' ? 'spinning' : ''}
+              />
             </button>
           </header>
           <div className="cloud-live-source">
@@ -213,7 +223,12 @@ export function CloudLab() {
                 : 'Local baseline shown until OCI publishes its first run'}
             </small>
           </div>
-          <div className="cloud-score-ring" style={{ '--score': `${latest.passRate * 100}%` } as React.CSSProperties}>
+          <div
+            className="cloud-score-ring"
+            style={
+              { '--score': `${latest.passRate * 100}%` } as React.CSSProperties
+            }
+          >
             <div>
               <strong>{percent(latest.passRate)}</strong>
               <span>EVAL PASS</span>
@@ -221,7 +236,10 @@ export function CloudLab() {
           </div>
           <div className="cloud-live-meta">
             <span>
-              <b>{latest.casesPassed}/{latest.casesTotal}</b> cases
+              <b>
+                {latest.casesPassed}/{latest.casesTotal}
+              </b>{' '}
+              cases
             </span>
             <span>
               <b>{latest.commitSha.slice(0, 8)}</b> commit
@@ -270,7 +288,8 @@ export function CloudLab() {
           <h2>Private data plane. Public proof plane.</h2>
           <p>
             The browser never reaches ClickHouse or a BMC. OCI sends normalized
-            telemetry and evaluation summaries outbound through authenticated HTTPS.
+            telemetry and evaluation summaries outbound through authenticated
+            HTTPS.
           </p>
         </header>
         <div className="cloud-flow">
@@ -280,28 +299,36 @@ export function CloudLab() {
             <strong>Redfish BMC or simulator</strong>
             <small>GET + EventService only</small>
           </article>
-          <i><ArrowRight /></i>
+          <i>
+            <ArrowRight />
+          </i>
           <article>
             <Database />
             <span>OCI A1</span>
             <strong>Collector + ClickHouse</strong>
             <small>Raw signals + 1m rollups</small>
           </article>
-          <i><ArrowRight /></i>
+          <i>
+            <ArrowRight />
+          </i>
           <article>
             <BrainCircuit />
             <span>EVALUATION PLANE</span>
             <strong>Agent + 70 frozen cases</strong>
             <small>Quality, safety and latency</small>
           </article>
-          <i><ArrowRight /></i>
+          <i>
+            <ArrowRight />
+          </i>
           <article>
             <Network />
             <span>HTTPS EGRESS</span>
             <strong>Token-protected ingest</strong>
             <small>1–1000 samples per batch</small>
           </article>
-          <i><ArrowRight /></i>
+          <i>
+            <ArrowRight />
+          </i>
           <article>
             <Cloud />
             <span>PUBLIC PRODUCT</span>
@@ -359,14 +386,33 @@ export function CloudLab() {
           <span>PORTFOLIO PROOF</span>
           <h2>What this deployment demonstrates</h2>
           <ul>
-            <li><CheckCircle2 /> Hardware observability across power, thermal, GPU and fabric domains</li>
-            <li><CheckCircle2 /> Cloud infrastructure as code with a least-privilege instance identity</li>
-            <li><CheckCircle2 /> Evidence-grounded AI with deterministic baselines and release gates</li>
-            <li><CheckCircle2 /> OpenTelemetry and LangSmith-shaped trace correlation</li>
-            <li><CheckCircle2 /> Cost-aware engineering that stays inside an Always Free envelope</li>
+            <li>
+              <CheckCircle2 /> Hardware observability across power, thermal, GPU
+              and fabric domains
+            </li>
+            <li>
+              <CheckCircle2 /> Cloud infrastructure as code with a
+              least-privilege instance identity
+            </li>
+            <li>
+              <CheckCircle2 /> Evidence-grounded AI with deterministic baselines
+              and release gates
+            </li>
+            <li>
+              <CheckCircle2 /> OpenTelemetry and LangSmith-shaped trace
+              correlation
+            </li>
+            <li>
+              <CheckCircle2 /> Cost-aware engineering that stays inside an
+              Always Free envelope
+            </li>
           </ul>
           <div>
-            <a href="https://github.com/sivalinb/racklens-ai" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/sivalinb/racklens-ai"
+              target="_blank"
+              rel="noreferrer"
+            >
               <GitBranch /> Review implementation <ExternalLink />
             </a>
             <a href="/ai-observability">
@@ -378,7 +424,11 @@ export function CloudLab() {
 
       <footer className="cloud-footer">
         <span>RackLens OCI Reliability Lab</span>
-        <span>{sourceState === 'live' ? 'Evaluation registry available' : 'Local fallback active'}</span>
+        <span>
+          {sourceState === 'live'
+            ? 'Evaluation registry available'
+            : 'Local fallback active'}
+        </span>
         <span>Production writes: 0</span>
       </footer>
     </main>

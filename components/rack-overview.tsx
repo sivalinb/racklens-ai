@@ -147,6 +147,7 @@ export function RackOverview() {
           <a href="/dashboard">Observability</a>
           <a href="/ai-observability">AI Observability</a>
           <a href="/cloud-lab">OCI Cloud Lab</a>
+          <a href="/architecture">Architecture</a>
           <a href="#digital-twin">Digital twin</a>
           <a href="#fleet">Fleet</a>
           <a href="#gpu">GPU fabric</a>

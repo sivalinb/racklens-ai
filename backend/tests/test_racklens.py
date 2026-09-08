@@ -11,7 +11,13 @@ from racklens.evaluation import OCIArtifactPublisher, EXPECTED_TOP_CAUSES, publi
 from racklens.knowledge import LocalHybridRetriever
 from racklens.simulator import RackSimulator, SCENARIOS
 from racklens.training import build_training_examples, export_training_dataset, model_ops_manifest, train_adapter
-from racklens.telemetry import CompositeTelemetryStore, MetricSample, SQLiteTelemetryStore, TelemetryTarget
+from racklens.telemetry import (
+    ClickHouseHTTPStore,
+    CompositeTelemetryStore,
+    MetricSample,
+    SQLiteTelemetryStore,
+    TelemetryTarget,
+)
 
 
 class SimulatorTests(unittest.TestCase):
@@ -107,6 +113,22 @@ class ProductPlatformTests(unittest.TestCase):
 
 
 class TelemetryStoreTests(unittest.TestCase):
+    def test_clickhouse_store_serializes_datetime64_in_native_format(self):
+        store = ClickHouseHTTPStore("http://clickhouse:8123")
+        sample = MetricSample(
+            datetime(2026, 9, 8, 1, 23, 45, 678901, tzinfo=UTC),
+            "thermal.inlet_c",
+            24.6,
+            "Cel",
+            "/redfish/v1/Chassis/R02/Thermal",
+            TelemetryTarget(),
+        )
+        with patch.object(store, "_request", return_value=b"") as request:
+            self.assertEqual(store.insert_metrics([sample]), 1)
+
+        payload = json.loads(request.call_args.args[1])
+        self.assertEqual(payload["timestamp"], "2026-09-08 01:23:45.678")
+
     def test_sqlite_store_persists_normalized_redfish_samples(self):
         with TemporaryDirectory() as directory:
             store = SQLiteTelemetryStore(f"{directory}/telemetry.db")

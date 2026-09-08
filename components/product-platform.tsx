@@ -76,6 +76,7 @@ export function ProductPlatform() {
           <a className="active" href="/platform">
             Product Lab
           </a>
+          <a href="/architecture">Architecture</a>
         </nav>
         <span className="platform-readonly">
           <LockKeyhole /> READ-ONLY

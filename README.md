@@ -12,6 +12,8 @@ RackLens AI is a Python-first reliability intelligence studio for AI infrastruct
 
 **OCI reliability lab:** [racklens-ai.siva-babu.chatgpt.site/cloud-lab](https://racklens-ai.siva-babu.chatgpt.site/cloud-lab)
 
+**Animated architecture:** [racklens-ai.siva-babu.chatgpt.site/architecture](https://racklens-ai.siva-babu.chatgpt.site/architecture)
+
 > The public website persists live Redfish-shaped demo telemetry and AI traces in a server-side time-series store, with an explicit replay fallback. The Python edge service can collect from an authorized Redfish endpoint and send batches to ClickHouse or the hosted ingestion API. No Redfish write operation is implemented.
 
 ## Product experience
@@ -54,32 +56,23 @@ The dashboard provides:
 
 ## Architecture
 
-```text
-Redfish BMC / DMTF emulator
-  ├─ Systems + Chassis inventory
-  ├─ TelemetryService metric reports
-  ├─ EventService events
-  └─ Firmware inventory
-             │
-             ▼
-Python collector → normalizer → D1 / ClickHouse time-series store
-             │                    │
-             │                    ├─ OTLP → ClickHouse / LangSmith
-             │                    └─ query API → dashboards
-             ▼
-signal correlation → GPU / fabric / power / thermal evidence
-             │
-             ▼
-Local hybrid RAG → three hypotheses → citation critic
-             │                    │
-             │                    └─ LangSmith-shaped traces + feedback
-             │
-             ▼
-Human review → verification plan (no production write)
-             │
-             ▼
-Golden replay lab → operator-reviewed dataset → LoRA / QLoRA release gate
+```mermaid
+flowchart LR
+    redfish["Redfish BMC or emulator"] -->|"GET only"| edge["Python edge collector"]
+    edge --> normalize["Normalize + correlate"]
+    normalize --> tsdb[("ClickHouse / D1")]
+    tsdb --> dashboards["3D + Redfish + AI dashboards"]
+    normalize --> rag["Reviewed RAG evidence"]
+    rag --> agent["Three hypotheses + citation critic"]
+    agent --> review["Human review + verification plan"]
+    edge --> traces["OpenTelemetry"]
+    traces --> tsdb
+    traces -.->|"optional"| langsmith["LangSmith"]
+    evals["70-case evaluation"] --> evidence["OCI evidence plane"]
+    evals --> tuning["Gated LoRA / QLoRA"]
 ```
+
+See the [full implementation map](docs/ARCHITECTURE.md) and [OCI trust boundaries](docs/OCI_ARCHITECTURE.md).
 
 The default agent is deterministic so evaluation is reproducible. An optional OpenAI-compatible adapter supports Fireworks, Mistral, Ollama/Qwen, or another compatible provider through environment variables.
 
@@ -139,9 +132,9 @@ npm run build
 | `GET /api/redfish/capabilities`        | Redfish capability and safety matrix   |
 | `GET /api/model-ops`                   | Adapter configuration and release gate |
 | `GET /api/telemetry/query`             | Query normalized stored measurements   |
-| `POST /api/telemetry/ingest`           | Ingest a bounded metric batch           |
-| `GET /api/evaluations/latest`          | Evaluation evidence and cloud status    |
-| `POST /api/evaluations/ingest`         | Ingest a signed OCI evaluation summary  |
+| `POST /api/telemetry/ingest`           | Ingest a bounded metric batch          |
+| `GET /api/evaluations/latest`          | Evaluation evidence and cloud status   |
+| `POST /api/evaluations/ingest`         | Ingest a signed OCI evaluation summary |
 | `GET /api/fleet/{scenario}`            | Complete Redfish-shaped fleet snapshot |
 | `GET /api/events/{scenario}`           | Server-Sent Events telemetry replay    |
 | `POST /api/investigations/{scenario}`  | Evidence-first investigation           |

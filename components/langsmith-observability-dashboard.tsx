@@ -384,6 +384,7 @@ export function LangSmithObservabilityDashboard() {
           <a href="/studio">3D Studio</a>
           <a href="/cloud-lab">OCI Cloud Lab</a>
           <a href="/platform">Product Lab</a>
+          <a href="/architecture">Architecture</a>
           <button aria-label="Notifications">
             <Bell />
           </button>

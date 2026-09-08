@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Protocol
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -132,8 +133,14 @@ class ClickHouseHTTPStore:
             headers={"Authorization": f"Basic {auth}", "Content-Type": "application/x-ndjson"},
             method="POST",
         )
-        with urlopen(request, timeout=20) as response:
-            return response.read()
+        try:
+            with urlopen(request, timeout=20) as response:
+                return response.read()
+        except HTTPError as error:
+            detail = error.read().decode("utf-8", errors="replace").strip()
+            raise RuntimeError(
+                f"ClickHouse HTTP {error.code}: {detail[:1000] or error.reason}"
+            ) from error
 
     def ensure_schema(self) -> None:
         self._request(f"CREATE DATABASE IF NOT EXISTS {self.database}")
@@ -142,7 +149,14 @@ class ClickHouseHTTPStore:
     def insert_metrics(self, samples: list[MetricSample]) -> int:
         if not samples:
             return 0
-        payload = "\n".join(json.dumps(sample.json_row()) for sample in samples).encode()
+        rows = []
+        for sample in samples:
+            row = sample.json_row()
+            row["timestamp"] = sample.timestamp.astimezone(UTC).strftime(
+                "%Y-%m-%d %H:%M:%S.%f"
+            )[:-3]
+            rows.append(row)
+        payload = "\n".join(json.dumps(row) for row in rows).encode()
         query = f"INSERT INTO {self.database}.metric_samples FORMAT JSONEachRow"
         self._request(query, payload)
         return len(samples)
