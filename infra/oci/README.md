@@ -4,6 +4,8 @@ This deployment turns the portfolio demo into a real, source-linked product lab 
 
 ## Cost and security envelope
 
+For the existing small host, see the [ClickHouse memory incident and targeted collector repair](MEMORY-INCIDENT.md). It preserves memory limits and data while reducing internal metrics-log merge size and adding bounded collector recovery. Do not overwrite deployed local repairs or restart the full stack to apply it.
+
 - `VM.Standard.A1.Flex`: 2 OCPUs and 12 GB RAM
 - 100 GB boot volume
 - One private, versioned Object Storage bucket

@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Protocol
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -116,6 +116,16 @@ SETTINGS index_granularity = 8192
 """.strip()
 
 
+class TelemetryUnavailable(RuntimeError):
+    """Transient store failure; delivery may be partial, so never replay blindly."""
+
+    def __init__(self, reason: str):
+        if reason not in {"memory_limit", "overloaded", "transport_unknown"}:
+            raise ValueError("Unsupported telemetry failure reason")
+        self.reason = reason
+        super().__init__("ClickHouse temporarily unavailable: " + reason)
+
+
 class ClickHouseHTTPStore:
     """Batched HTTP client that works with ClickHouse Cloud or self-hosted ClickHouse."""
 
@@ -137,10 +147,16 @@ class ClickHouseHTTPStore:
             with urlopen(request, timeout=20) as response:
                 return response.read()
         except HTTPError as error:
-            detail = error.read().decode("utf-8", errors="replace").strip()
+            detail = error.read(1000).decode("utf-8", errors="replace").strip()
+            if error.code == 500 and detail.startswith("Code: 241."):
+                raise TelemetryUnavailable("memory_limit") from None
+            if error.code in {429, 502, 503, 504}:
+                raise TelemetryUnavailable("overloaded") from None
             raise RuntimeError(
                 f"ClickHouse HTTP {error.code}: {detail[:1000] or error.reason}"
             ) from error
+        except (URLError, TimeoutError, ConnectionError):
+            raise TelemetryUnavailable("transport_unknown") from None
 
     def ensure_schema(self) -> None:
         self._request(f"CREATE DATABASE IF NOT EXISTS {self.database}")

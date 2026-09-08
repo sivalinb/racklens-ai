@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import re
 import time
 from datetime import UTC, datetime
@@ -8,7 +9,35 @@ from typing import Iterator
 
 from .simulator import RackSimulator
 from .redfish import RedfishClient, RedfishResource
-from .telemetry import MetricSample, TelemetryStore, TelemetryTarget
+from .telemetry import MetricSample, TelemetryStore, TelemetryTarget, TelemetryUnavailable
+
+
+def _poll_forever(poll, interval_seconds: int) -> None:
+    """Bound backoff, not memory. A failed batch is not replayed or marked delivered.
+
+    ClickHouse/materialized-view or composite-sink writes can partially succeed.
+    Without an end-to-end deduplication key, retries could duplicate telemetry.
+    Resume with a fresh poll and explicitly record the possible delivery gap.
+    Unexpected bugs/authentication/schema errors still fail visibly.
+    """
+    interval = max(interval_seconds, 5)
+    failures = 0
+    while True:
+        try:
+            poll()
+        except TelemetryUnavailable as error:
+            failures += 1
+            delay = max(interval, min(300, interval * 2 ** min(failures - 1, 6)))
+            print(json.dumps({"event": "collector_poll_failed", "backend": "clickhouse",
+                              "reason": error.reason, "consecutive_failures": failures,
+                              "next_poll_seconds": delay, "delivery": "unknown_not_replayed"}), flush=True)
+        else:
+            if failures:
+                print(json.dumps({"event": "collector_poll_recovered",
+                                  "previous_failures": failures}), flush=True)
+            failures = 0
+            delay = interval
+        time.sleep(delay)
 
 
 NUMERIC_KEYS = {
@@ -43,9 +72,7 @@ class RedfishTelemetryCollector:
         }
 
     def run(self, interval_seconds: int = 30) -> None:
-        while True:
-            self.collect_once()
-            time.sleep(max(interval_seconds, 5))
+        _poll_forever(self.collect_once, interval_seconds)
 
     def _normalize(self, resource: RedfishResource) -> Iterator[MetricSample]:
         timestamp = datetime.now(UTC)
@@ -169,7 +196,9 @@ class SimulatorTelemetryCollector:
 
     def run(self, interval_seconds: int = 30, scenario: str = "cooling_imbalance") -> None:
         step = 0
-        while True:
-            self.collect_once(scenario, step)
+        def poll():
+            nonlocal step
+            current = step
             step += 1
-            time.sleep(max(interval_seconds, 5))
+            return self.collect_once(scenario, current)
+        _poll_forever(poll, interval_seconds)
