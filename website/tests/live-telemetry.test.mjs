@@ -17,6 +17,10 @@ const telemetryRoute = readFileSync(
   new URL('../../app/api/telemetry/query/route.ts', import.meta.url),
   'utf8',
 );
+const telemetryStore = readFileSync(
+  new URL('../../lib/telemetry-store.ts', import.meta.url),
+  'utf8',
+);
 const ingestRoute = readFileSync(
   new URL('../../app/api/telemetry/ingest/route.ts', import.meta.url),
   'utf8',
@@ -36,6 +40,14 @@ test('Redfish dashboard queries a persistent time-series API with fallback', () 
   assert.match(dashboard, /Deterministic replay fallback/);
   assert.match(dashboard, /freshnessSeconds/);
   assert.match(telemetryRoute, /queryTelemetry/);
+});
+
+test('OCI edge telemetry is a first-class dashboard target with provenance', () => {
+  assert.match(dashboard, /OCI-PHX-01 · OCI live/);
+  assert.match(dashboard, /href={telemetryQueryUrl}/);
+  assert.match(telemetryStore, /'OCI-PHX-01': \['Hall A'\]/);
+  assert.match(telemetryStore, /oci-edge-live/);
+  assert.match(telemetryStore, /OCI ClickHouse edge · Cloudflare D1 mirror/);
 });
 
 test('ingestion stays server-side and token protected', () => {

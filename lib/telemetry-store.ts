@@ -141,6 +141,7 @@ const metricDefinitions: MetricDefinition[] = [
 ];
 
 const allowedInventory = {
+  'OCI-PHX-01': ['Hall A'],
   'DEN-01': ['Hall A', 'Hall B'],
   'SJC-02': ['Hall A', 'Hall C'],
   'IAD-01': ['Hall B', 'Hall D'],
@@ -311,7 +312,7 @@ export async function queryTelemetry(target: TelemetryTarget) {
   const since = Date.now() - 24 * 60 * 60 * 1_000;
   const result = await db
     .prepare(
-      `SELECT timestamp_ms, metric_name, value
+      `SELECT timestamp_ms, metric_name, value, source_kind
        FROM metric_samples
        WHERE data_center = ? AND hall = ? AND row_name = ? AND rack_id = ?
          AND node_id = ? AND gpu_id = ? AND timestamp_ms >= ?
@@ -326,7 +327,12 @@ export async function queryTelemetry(target: TelemetryTarget) {
       target.gpu,
       since,
     )
-    .all<{ timestamp_ms: number; metric_name: string; value: number }>();
+    .all<{
+      timestamp_ms: number;
+      metric_name: string;
+      value: number;
+      source_kind: string;
+    }>();
 
   const grouped = new Map<number, Record<string, number>>();
   for (const row of result.results) {
@@ -352,11 +358,18 @@ export async function queryTelemetry(target: TelemetryTarget) {
       pollLatency: values['collector.poll_latency_ms'],
     }));
   const newest = series.at(-1)?.timestamp ?? null;
+  const ociEdgeConnected = result.results.some((row) =>
+    row.source_kind.startsWith('OCI RackLens'),
+  );
   return {
     source: {
-      mode: 'hosted-live-demo',
-      engine: 'Cloudflare D1 time-series store',
-      ingestion: 'Redfish-shaped simulator → normalized metric rows',
+      mode: ociEdgeConnected ? 'oci-edge-live' : 'hosted-live-demo',
+      engine: ociEdgeConnected
+        ? 'OCI ClickHouse edge · Cloudflare D1 mirror'
+        : 'Cloudflare D1 time-series store',
+      ingestion: ociEdgeConnected
+        ? 'OCI Redfish-shaped collector → ClickHouse + hosted mirror'
+        : 'Redfish-shaped simulator → normalized metric rows',
       api: '/api/telemetry/query',
       clickhouseCompatible: true,
       persistent: true,

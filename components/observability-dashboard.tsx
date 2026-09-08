@@ -73,6 +73,7 @@ const palette = {
 };
 
 const facilities = {
+  'OCI-PHX-01': ['Hall A'],
   'DEN-01': ['Hall A', 'Hall B'],
   'SJC-02': ['Hall A', 'Hall C'],
   'IAD-01': ['Hall B', 'Hall D'],
@@ -194,7 +195,7 @@ function MetricTooltip({ active, payload, label }: MetricTooltipProps) {
 
 export function ObservabilityDashboard() {
   const [dataCenter, setDataCenter] =
-    useState<keyof typeof facilities>('DEN-01');
+    useState<keyof typeof facilities>('OCI-PHX-01');
   const [hall, setHall] = useState('Hall A');
   const [row, setRow] = useState('Row 02');
   const [rack, setRack] = useState('R02');
@@ -214,6 +215,19 @@ export function ObservabilityDashboard() {
   >('connecting');
   const scenario = SCENARIOS[scenarioKey];
 
+  const telemetryQueryUrl = useMemo(() => {
+    const params = new URLSearchParams({
+      data_center: dataCenter,
+      hall,
+      row,
+      rack,
+      node: node === 'All nodes' ? 'U18' : node,
+      gpu: gpu === 'All GPUs' ? 'GPU0' : gpu.replace(' ', ''),
+      range,
+    });
+    return `/api/telemetry/query?${params}`;
+  }, [dataCenter, hall, row, rack, node, gpu, range]);
+
   useEffect(() => {
     if (paused) return;
     const intervalSeconds = Number.parseInt(refresh, 10);
@@ -227,16 +241,7 @@ export function ObservabilityDashboard() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const params = new URLSearchParams({
-      data_center: dataCenter,
-      hall,
-      row,
-      rack,
-      node: node === 'All nodes' ? 'U18' : node,
-      gpu: gpu === 'All GPUs' ? 'GPU0' : gpu.replace(' ', ''),
-      range,
-    });
-    fetch(`/api/telemetry/query?${params}`, {
+    fetch(telemetryQueryUrl, {
       cache: 'no-store',
       signal: controller.signal,
     })
@@ -254,7 +259,7 @@ export function ObservabilityDashboard() {
         setTelemetryState('fallback');
       });
     return () => controller.abort();
-  }, [dataCenter, hall, row, rack, node, gpu, range, refreshTick]);
+  }, [telemetryQueryUrl, refreshTick]);
 
   const replayLineData = useMemo(
     () =>
@@ -423,7 +428,7 @@ export function ObservabilityDashboard() {
             ? `${liveTelemetry?.sampleCount ?? 0} normalized samples · ${liveTelemetry?.source.ingestion}`
             : 'Charts remain operational while the persistent source reconnects'}
         </p>
-        <a href="/api/telemetry/query" target="_blank" rel="noreferrer">
+        <a href={telemetryQueryUrl} target="_blank" rel="noreferrer">
           Query API ↗
         </a>
       </section>
@@ -449,9 +454,10 @@ export function ObservabilityDashboard() {
                 setHall(facilities[value][0]);
               }}
             >
-              <option>DEN-01</option>
-              <option>SJC-02</option>
-              <option>IAD-01</option>
+              <option value="OCI-PHX-01">OCI-PHX-01 · OCI live</option>
+              <option value="DEN-01">DEN-01</option>
+              <option value="SJC-02">SJC-02</option>
+              <option value="IAD-01">IAD-01</option>
             </select>
           </label>
           <label>
