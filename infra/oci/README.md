@@ -28,6 +28,8 @@ Do not send RackLens an Oracle password, private SSH key, API private key, auth 
 
 Open **Developer tools → Cloud Shell** in the OCI Console. Cloud Shell already has the OCI CLI, Terraform, and a short-lived authenticated session.
 
+Cloud Shell's CLI identifies the signed-in user through `instance_obo_user`. The OCI Terraform provider uses `InstancePrincipal` together with Cloud Shell's on-behalf-of-user delegation token. Do not force CLI checks to `--auth instance_principal`; that selects the underlying Cloud Shell VM identity instead of your signed-in user. Run ordinary verification commands such as `oci os ns get` without an `--auth` override.
+
 ```bash
 git clone https://github.com/sivalinb/racklens-ai.git
 cd racklens-ai/infra/oci

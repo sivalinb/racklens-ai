@@ -9,8 +9,8 @@ terraform {
 }
 
 provider "oci" {
-  tenancy_ocid        = var.tenancy_ocid
+  tenancy_ocid        = var.oci_auth == "InstancePrincipal" ? null : var.tenancy_ocid
   region              = var.region
   auth                = var.oci_auth
-  config_file_profile = var.oci_profile
+  config_file_profile = contains(["APIKey", "SecurityToken"], var.oci_auth) ? var.oci_profile : null
 }

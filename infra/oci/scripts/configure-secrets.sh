@@ -49,4 +49,5 @@ printf '%s\n' \
 chmod 0600 "$ENV_FILE"
 systemctl restart racklens-stack.service
 systemctl start racklens-evaluator.service
+systemctl enable --now racklens-evaluator.timer
 echo "RackLens is active. No secret was written to Terraform state."

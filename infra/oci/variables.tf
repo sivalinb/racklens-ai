@@ -53,9 +53,9 @@ variable "repository_ref" {
 }
 
 variable "oci_auth" {
-  description = "Cloud Shell uses SecurityToken; use APIKey only for a configured local OCI CLI."
+  description = "Cloud Shell Terraform uses InstancePrincipal with its on-behalf-of-user delegation token; use SecurityToken or APIKey only with a configured OCI CLI profile."
   type        = string
-  default     = "SecurityToken"
+  default     = "InstancePrincipal"
 }
 
 variable "oci_profile" {
