@@ -2,7 +2,6 @@
 /* oxlint-disable next/no-html-link-for-pages -- Vinext production routing requires full document navigation between routes. */
 
 import {
-  Bell,
   Clock3,
   Cpu,
   Database,
@@ -10,16 +9,13 @@ import {
   Gauge,
   LayoutDashboard,
   Maximize2,
-  MoreHorizontal,
+  Minimize2,
   Network,
   Pause,
   Play,
   RefreshCw,
   Search,
-  Settings,
-  Share2,
   ShieldCheck,
-  Star,
   Thermometer,
   TriangleAlert,
   Zap,
@@ -131,24 +127,36 @@ function Panel({
   className?: string;
   defer?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (!expanded) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setExpanded(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [expanded]);
   const browserReady = useSyncExternalStore(
     subscribeToBrowser,
     () => true,
     () => false,
   );
   return (
-    <section className={`observe-panel ${className}`}>
+    <section
+      className={`observe-panel ${className} ${expanded ? 'is-expanded' : ''}`}
+    >
       <header>
         <div>
           <h2>{title}</h2>
           <span>{subtitle}</span>
         </div>
         <div className="observe-panel-actions">
-          <button aria-label={`Expand ${title}`}>
-            <Maximize2 />
-          </button>
-          <button aria-label={`More options for ${title}`}>
-            <MoreHorizontal />
+          <button
+            aria-label={`${expanded ? 'Collapse' : 'Expand'} ${title}`}
+            aria-pressed={expanded}
+            onClick={() => setExpanded((value) => !value)}
+          >
+            {expanded ? <Minimize2 /> : <Maximize2 />}
           </button>
         </div>
       </header>
@@ -365,23 +373,9 @@ export function ObservabilityDashboard() {
 
   return (
     <main className="observe-shell">
-      <SiteHeader
-        activePath="/dashboard"
-        pageLabel="Redfish Dashboard"
-        actions={
-          <>
-            <button className="observe-search">
-              <Search /> Search dashboards and signals <kbd>⌘K</kbd>
-            </button>
-            <button className="site-header-icon" aria-label="Notifications">
-              <Bell />
-            </button>
-            <button className="site-header-icon" aria-label="Settings">
-              <Settings />
-            </button>
-          </>
-        }
-      />
+      <SiteHeader activePath="/dashboard" pageLabel="Redfish Dashboard" />
+
+      <h1 className="sr-only">Redfish rack and GPU observability dashboard</h1>
 
       <div className="observe-crumbbar">
         <div>
@@ -390,14 +384,9 @@ export function ObservabilityDashboard() {
           <b>/</b>
           <strong>Redfish rack & GPU overview</strong>
         </div>
-        <div>
-          <button>
-            <Star /> Star
-          </button>
-          <button>
-            <Share2 /> Share
-          </button>
-        </div>
+        <span className="observe-mode-badge">
+          <ShieldCheck /> READ-ONLY DEMO
+        </span>
       </div>
 
       <section
@@ -574,9 +563,11 @@ export function ObservabilityDashboard() {
           <i className={`status-live ${telemetryState}`} />{' '}
           {paused
             ? 'Streaming paused'
-            : telemetryState === 'live'
-              ? `Persistent stream · refresh ${refresh}`
-              : `Replay fallback · refresh ${refresh}`}
+            : telemetryState === 'connecting'
+              ? 'Connecting to hosted telemetry'
+              : telemetryState === 'live'
+                ? `Persistent stream · refresh ${refresh}`
+                : `Replay fallback · refresh ${refresh}`}
         </span>
         <span>
           {dataCenter} / {hall} / {row} / {rack} / {node} / {gpu}

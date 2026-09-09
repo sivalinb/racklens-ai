@@ -3,7 +3,6 @@
 
 import {
   Activity,
-  Bell,
   BookOpenCheck,
   Check,
   Clock3,
@@ -15,14 +14,13 @@ import {
   GitBranch,
   LayoutDashboard,
   Maximize2,
-  MoreHorizontal,
+  Minimize2,
   Network,
   Pause,
   Play,
   RefreshCw,
   RotateCcw,
   Search,
-  Settings,
   ShieldCheck,
 } from 'lucide-react';
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
@@ -205,24 +203,37 @@ function AiPanel({
   className?: string;
   chart?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (!expanded) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setExpanded(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [expanded]);
   const browserReady = useSyncExternalStore(
     subscribeToBrowser,
     () => true,
     () => false,
   );
   return (
-    <section id={id} className={`observe-panel ls-panel ${className}`}>
+    <section
+      id={id}
+      className={`observe-panel ls-panel ${className} ${expanded ? 'is-expanded' : ''}`}
+    >
       <header>
         <div>
           <h2>{title}</h2>
           <span>{subtitle}</span>
         </div>
         <div className="observe-panel-actions">
-          <button aria-label={`Expand ${title}`}>
-            <Maximize2 />
-          </button>
-          <button aria-label={`More options for ${title}`}>
-            <MoreHorizontal />
+          <button
+            aria-label={`${expanded ? 'Collapse' : 'Expand'} ${title}`}
+            aria-pressed={expanded}
+            onClick={() => setExpanded((value) => !value)}
+          >
+            {expanded ? <Minimize2 /> : <Maximize2 />}
           </button>
         </div>
       </header>
@@ -258,12 +269,36 @@ export function LangSmithObservabilityDashboard() {
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(
     () => new Set(),
   );
+  const [lessonsHydrated, setLessonsHydrated] = useState(false);
   const [traceTelemetry, setTraceTelemetry] = useState<TraceApiPayload | null>(
     null,
   );
   const [traceSourceState, setTraceSourceState] = useState<
     'connecting' | 'live' | 'fallback'
   >('connecting');
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const stored = window.localStorage.getItem('racklens-learning-progress');
+      if (stored) {
+        try {
+          setCompletedLessons(new Set(JSON.parse(stored) as string[]));
+        } catch {
+          window.localStorage.removeItem('racklens-learning-progress');
+        }
+      }
+      setLessonsHydrated(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!lessonsHydrated) return;
+    window.localStorage.setItem(
+      'racklens-learning-progress',
+      JSON.stringify([...completedLessons]),
+    );
+  }, [completedLessons, lessonsHydrated]);
 
   useEffect(() => {
     if (paused) return;
@@ -368,23 +403,9 @@ export function LangSmithObservabilityDashboard() {
 
   return (
     <main className="observe-shell ls-shell">
-      <SiteHeader
-        activePath="/ai-observability"
-        pageLabel="AI Observability"
-        actions={
-          <>
-            <button className="observe-search">
-              <Search /> Search traces, runs and evaluations <kbd>⌘K</kbd>
-            </button>
-            <button className="site-header-icon" aria-label="Notifications">
-              <Bell />
-            </button>
-            <button className="site-header-icon" aria-label="Settings">
-              <Settings />
-            </button>
-          </>
-        }
-      />
+      <SiteHeader activePath="/ai-observability" pageLabel="AI Observability" />
+
+      <h1 className="sr-only">AI reliability observability dashboard</h1>
 
       <div className="observe-crumbbar">
         <div>
@@ -571,7 +592,13 @@ export function LangSmithObservabilityDashboard() {
       <section className="observe-statusbar">
         <span>
           <i className={`status-live ${traceSourceState}`} />{' '}
-          {paused ? 'Trace stream paused' : `Trace stream · refresh ${refresh}`}
+          {paused
+            ? 'Trace stream paused'
+            : traceSourceState === 'connecting'
+              ? 'Connecting to persistent trace store'
+              : traceSourceState === 'live'
+                ? `Persistent traces · refresh ${refresh}`
+                : `Simulated trace replay · refresh ${refresh}`}
         </span>
         <span>
           {project} / {environment} / {service} / {dataCenter} / {rack}
@@ -643,71 +670,82 @@ export function LangSmithObservabilityDashboard() {
         </article>
       </section>
 
-      <section className="ls-learning" id="learning-path">
-        <header>
-          <div>
-            <span>
-              <BookOpenCheck /> BUILD &amp; LEARN
-            </span>
-            <h2>Five-week RackLens learning checklist</h2>
-            <p>
-              Complete each lab against the telemetry, traces and evaluation
-              evidence in this product.
-            </p>
+      <details className="ls-learning-disclosure" id="learning-path">
+        <summary>
+          <span>
+            <BookOpenCheck /> LEARNING MODE
+          </span>
+          <strong>Five-week RackLens checklist</strong>
+          <small>
+            {completedLessons.size}/{totalLessons} labs complete
+          </small>
+        </summary>
+        <section className="ls-learning">
+          <header>
+            <div>
+              <span>
+                <BookOpenCheck /> BUILD &amp; LEARN
+              </span>
+              <h2>Five-week RackLens learning checklist</h2>
+              <p>
+                Complete each lab against the telemetry, traces and evaluation
+                evidence in this product.
+              </p>
+            </div>
+            <div className="ls-learning-progress">
+              <strong>
+                {completedLessons.size}/{totalLessons}
+              </strong>
+              <span>labs complete · {learningProgress}%</span>
+              <i>
+                <em style={{ width: `${learningProgress}%` }} />
+              </i>
+              <button
+                onClick={() => setCompletedLessons(new Set())}
+                disabled={completedLessons.size === 0}
+              >
+                <RotateCcw /> Reset
+              </button>
+            </div>
+          </header>
+          <div className="ls-week-grid">
+            {learningWeeks.map((week, weekIndex) => {
+              const weekDone = week.tasks.filter((_, taskIndex) =>
+                completedLessons.has(`${weekIndex}-${taskIndex}`),
+              ).length;
+              return (
+                <article key={week.week}>
+                  <div className="ls-week-heading">
+                    <span>{week.week}</span>
+                    <b>{week.phase}</b>
+                    <strong>{weekDone}/4</strong>
+                  </div>
+                  <h3>{week.title}</h3>
+                  <p>{week.outcome}</p>
+                  <div className="ls-week-tasks">
+                    {week.tasks.map((task, taskIndex) => {
+                      const lessonId = `${weekIndex}-${taskIndex}`;
+                      const checked = completedLessons.has(lessonId);
+                      return (
+                        <label key={task} className={checked ? 'complete' : ''}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleLesson(lessonId)}
+                          />
+                          <i>{checked && <Check />}</i>
+                          <span>{task}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <a href={week.href}>{week.proof} →</a>
+                </article>
+              );
+            })}
           </div>
-          <div className="ls-learning-progress">
-            <strong>
-              {completedLessons.size}/{totalLessons}
-            </strong>
-            <span>labs complete · {learningProgress}%</span>
-            <i>
-              <em style={{ width: `${learningProgress}%` }} />
-            </i>
-            <button
-              onClick={() => setCompletedLessons(new Set())}
-              disabled={completedLessons.size === 0}
-            >
-              <RotateCcw /> Reset
-            </button>
-          </div>
-        </header>
-        <div className="ls-week-grid">
-          {learningWeeks.map((week, weekIndex) => {
-            const weekDone = week.tasks.filter((_, taskIndex) =>
-              completedLessons.has(`${weekIndex}-${taskIndex}`),
-            ).length;
-            return (
-              <article key={week.week}>
-                <div className="ls-week-heading">
-                  <span>{week.week}</span>
-                  <b>{week.phase}</b>
-                  <strong>{weekDone}/4</strong>
-                </div>
-                <h3>{week.title}</h3>
-                <p>{week.outcome}</p>
-                <div className="ls-week-tasks">
-                  {week.tasks.map((task, taskIndex) => {
-                    const lessonId = `${weekIndex}-${taskIndex}`;
-                    const checked = completedLessons.has(lessonId);
-                    return (
-                      <label key={task} className={checked ? 'complete' : ''}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => toggleLesson(lessonId)}
-                        />
-                        <i>{checked && <Check />}</i>
-                        <span>{task}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-                <a href={week.href}>{week.proof} →</a>
-              </article>
-            );
-          })}
-        </div>
-      </section>
+        </section>
+      </details>
 
       <section className="observe-grid ls-grid" id="ai-signals">
         <AiPanel

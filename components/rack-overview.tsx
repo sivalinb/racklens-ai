@@ -138,7 +138,7 @@ export function RackOverview() {
         actions={
           <>
             <Badge className="live-badge">
-              <span className="live-dot" /> LIVE REPLAY
+              <span className="live-dot" /> SIMULATED REPLAY
             </Badge>
             <Button
               variant="outline"

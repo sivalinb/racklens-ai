@@ -239,7 +239,7 @@ export function DataCenterTwin({
           </p>
         </div>
         <Badge variant="outline">
-          <Activity /> LIVE TOPOLOGY
+          <Activity /> INTERACTIVE TOPOLOGY
         </Badge>
       </div>
 

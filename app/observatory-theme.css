@@ -125,6 +125,137 @@ body {
   color: var(--observatory-green);
 }
 
+.observe-mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8fc9ac;
+  font: 700 10px var(--font-geist-mono);
+  letter-spacing: 0.08em;
+}
+
+.observe-mode-badge svg {
+  width: 14px;
+}
+
+.observe-panel.is-expanded {
+  position: fixed;
+  z-index: 100;
+  inset: 16px;
+  width: auto;
+  height: auto;
+  max-height: calc(100vh - 32px);
+  box-shadow:
+    0 0 0 100vmax rgb(3 7 9 / 78%),
+    0 28px 80px rgb(0 0 0 / 72%);
+}
+
+.observe-panel.is-expanded .observe-panel-body {
+  height: calc(100% - 52px);
+  min-height: 0;
+  overflow: auto;
+}
+
+.observe-panel-actions button:focus-visible,
+.ls-learning-disclosure > summary:focus-visible {
+  outline: 2px solid #56d2df;
+  outline-offset: 2px;
+}
+
+.ls-learning-disclosure {
+  margin: 8px 8px 0;
+  color: #dfe0e2;
+  border: 1px solid #303238;
+  border-radius: 4px;
+  background: #181a1f;
+}
+
+.ls-learning-disclosure > summary {
+  display: grid;
+  min-height: 64px;
+  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  padding: 12px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ls-learning-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ls-learning-disclosure > summary::after {
+  content: '+';
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #b877d9;
+  border: 1px solid #4b3a54;
+  border-radius: 50%;
+}
+
+.ls-learning-disclosure[open] > summary::after {
+  content: '−';
+}
+
+.ls-learning-disclosure > summary > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #c993df;
+  font: 700 10px var(--font-geist-mono);
+  letter-spacing: 0.08em;
+}
+
+.ls-learning-disclosure > summary svg {
+  width: 15px;
+}
+
+.ls-learning-disclosure > summary strong {
+  font-size: 14px;
+}
+
+.ls-learning-disclosure > summary small {
+  color: #989a9f;
+  font: 11px var(--font-geist-mono);
+}
+
+.ls-learning-disclosure .ls-learning {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid #303238;
+  border-radius: 0;
+}
+
+@media (max-width: 720px) {
+  .observe-crumbbar .observe-mode-badge {
+    display: none;
+  }
+
+  .observe-events {
+    overflow-x: auto;
+  }
+
+  .observe-panel.is-expanded {
+    inset: 8px;
+    max-height: calc(100vh - 16px);
+  }
+
+  .ls-learning-disclosure > summary {
+    grid-template-columns: 1fr auto;
+  }
+
+  .ls-learning-disclosure > summary > span {
+    grid-column: 1 / -1;
+  }
+
+  .ls-learning-disclosure > summary small {
+    display: none;
+  }
+}
+
 /* Public home: editorial canvas plus one focused live-system surface. */
 .home-shell {
   color: var(--observatory-ink);

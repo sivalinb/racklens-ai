@@ -209,18 +209,21 @@ export function HomeExperience() {
         </div>
       </section>
 
-      <section className="home-proof" aria-label="Product results">
+      <section
+        className="home-proof"
+        aria-label="Validated demonstration results"
+      >
         <div>
           <strong>256</strong>
-          <span>GPUs mapped</span>
+          <span>GPUs in demo topology</span>
         </div>
         <div>
           <strong>94s</strong>
-          <span>leading indicator found</span>
+          <span>lead time in incident replay</span>
         </div>
         <div>
           <strong>70/70</strong>
-          <span>evaluation cases</span>
+          <span>deterministic evaluations</span>
         </div>
         <div>
           <strong>0</strong>

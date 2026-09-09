@@ -107,7 +107,7 @@ test('motion and reduced-motion behavior are both implemented', () => {
 });
 
 test('public experience is honestly labeled as replay', () => {
-  assert.match(dashboard, /LIVE REPLAY/);
+  assert.match(dashboard, /SIMULATED REPLAY/);
   assert.match(dashboard, /deterministic replay/);
 });
 
