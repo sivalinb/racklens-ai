@@ -23,7 +23,7 @@ const modelOps = JSON.parse(
   readFileSync(new URL('../../public/data/model-ops.json', import.meta.url)),
 );
 
-test('five-week product roadmap is implemented', () => {
+test('modular product roadmap is implemented', () => {
   for (const productModule of [
     'Redfish Capability Map',
     'Cited Incident Timeline',

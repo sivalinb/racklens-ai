@@ -98,9 +98,9 @@ test('source joins Redfish events to AI traces and feedback', () => {
   }
 });
 
-test('five-week learning checklist maps Redfish through model adaptation', () => {
-  for (const week of ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5']) {
-    assert.match(dashboard, new RegExp(week));
+test('modular learning checklist maps Redfish through model adaptation', () => {
+  for (const module of ['Module 1', 'Module 2', 'Module 3', 'Module 4', 'Module 5']) {
+    assert.match(dashboard, new RegExp(module));
   }
   for (const lesson of [
     'Redfish foundations',

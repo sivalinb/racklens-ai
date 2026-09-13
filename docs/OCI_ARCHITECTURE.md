@@ -48,9 +48,9 @@ The public application never connects to ClickHouse, Grafana, a BMC or OCI crede
 | Cost surprise                  | Always Free-sized A1, boot volume and object footprint plus budget alerts; no paid managed service is required           |
 | Secret in infrastructure state | Post-provision interactive setup writes `/etc/racklens/racklens.env` with mode `0600`                                    |
 
-## Weeks 1–5 mapped to a real product
+## Capabilities mapped to a real product
 
-| Week              | OCI-backed product proof                                                                                  | Measured result                                                                      |
+| Module              | OCI-backed product proof                                                                                  | Measured result                                                                      |
 | ----------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | 1 — Instrument    | Redfish normalizer and continuous simulator/collector on A1; ClickHouse target dimensions and source URIs | Freshness, schema coverage and collection latency                                    |
 | 2 — Contextualize | Evidence packs and replay artifacts in private versioned Object Storage                                   | Citation validity and retrieval provenance                                           |

@@ -1,4 +1,4 @@
-export type WeekKey = 1 | 2 | 3 | 4 | 5;
+export type ModuleKey = 1 | 2 | 3 | 4 | 5;
 
 export type RedfishCapability = {
   name: string;
@@ -9,8 +9,8 @@ export type RedfishCapability = {
   description: string;
 };
 
-export const WEEKS: Array<{
-  id: WeekKey;
+export const MODULES: Array<{
+  id: ModuleKey;
   name: string;
   product: string;
   outcome: string;

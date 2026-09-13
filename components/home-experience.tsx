@@ -322,7 +322,7 @@ export function HomeExperience() {
           Open the reliability studio <ArrowRight />
         </a>
         <a href="/platform">
-          Explore the five-week product <ArrowRight />
+          Explore the modular product <ArrowRight />
         </a>
       </section>
 

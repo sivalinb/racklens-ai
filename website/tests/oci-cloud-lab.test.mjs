@@ -16,7 +16,7 @@ test('OCI lab is honest before the external data plane is connected', () => {
   assert.match(cloudLab, /No secrets in browser/);
 });
 
-test('OCI lab maps weeks one through four to measurable product outcomes', () => {
+test('OCI lab maps core capabilities to measurable product outcomes', () => {
   for (const value of [
     'Instrument',
     'Contextualize',

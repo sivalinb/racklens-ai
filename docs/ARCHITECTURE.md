@@ -114,9 +114,9 @@ Solid arrows are implemented control or data paths. Dashed arrows are feedback o
 | Live read-only       | Authorized Redfish service | Evidence rules          | Lab and operator validation      |
 | Optional model       | Replay or live             | OpenAI-compatible model | Structured hypothesis comparison |
 
-## Five-week learning-to-product map
+## Modular learning-to-product map
 
-| Week | Product capability      | Core technology                                           | Proof                                                    |
+| Module | Product capability      | Core technology                                           | Proof                                                    |
 | ---- | ----------------------- | --------------------------------------------------------- | -------------------------------------------------------- |
 | 1    | Redfish Capability Map  | Resource discovery, GET-only collection and normalization | Schema coverage and source URIs                          |
 | 2    | Cited Incident Timeline | Hybrid RAG and structured evidence retrieval              | Every claim resolves to evidence                         |
@@ -128,7 +128,7 @@ Solid arrows are implemented control or data paths. Dashed arrows are feedback o
 
 The production Redfish client exposes `GET` only. UpdateService firmware inventory is readable, while reset, power control, configuration, firmware installation, composition and virtual-media writes are outside the connector. Approval records that a recommendation was reviewed; it never turns the recommendation into an action.
 
-The Week 5 pipeline exports provenance-tagged records into train, validation and test splits. LoRA and 4-bit QLoRA use PEFT configurations with rank 16, alpha 32 and dropout 0.05. Promotion remains blocked until at least 200 operator-reviewed examples exist and a candidate beats the base-plus-RAG system on held-out accuracy, citation validity, safety and latency. Synthetic replay data alone cannot clear this gate.
+The model-specialization pipeline exports provenance-tagged records into train, validation and test splits. LoRA and 4-bit QLoRA use PEFT configurations with rank 16, alpha 32 and dropout 0.05. Promotion remains blocked until at least 200 operator-reviewed examples exist and a candidate beats the base-plus-RAG system on held-out accuracy, citation validity, safety and latency. Synthetic replay data alone cannot clear this gate.
 
 ## Production extension points
 

@@ -562,7 +562,7 @@ body {
 .cloud-kicker,
 .platform-section-heading > div > span,
 .cloud-architecture header > span,
-.cloud-week-section header > span,
+.cloud-module-section header > span,
 .cloud-resource-panel header > span,
 .cloud-proof-panel > span {
   color: var(--observatory-green);
@@ -572,7 +572,7 @@ body {
 .cloud-hero-copy h1,
 .platform-section-heading h2,
 .cloud-architecture h2,
-.cloud-week-section h2,
+.cloud-module-section h2,
 .cloud-resource-panel h2,
 .cloud-proof-panel h2 {
   color: var(--observatory-ink);
@@ -621,7 +621,7 @@ body {
 
 .platform-flow-node,
 .cloud-flow article,
-.cloud-week-grid article,
+.cloud-module-grid article,
 .cloud-resource-panel,
 .cloud-proof-panel {
   border-color: #356b59;

@@ -69,30 +69,30 @@ const fallbackRun: EvaluationRun = {
   mode: 'deterministic-baseline',
 };
 
-const weeks = [
+const modules = [
   {
-    week: '01',
+    module: '01',
     title: 'Instrument',
     body: 'GET-only Redfish collection, EventService correlation and normalized ClickHouse time series.',
     proof: 'Signal freshness + source URIs',
     icon: Activity,
   },
   {
-    week: '02',
+    module: '02',
     title: 'Contextualize',
     body: 'Versioned runbooks, replay payloads and evidence packs retained in private Object Storage.',
     proof: 'Recall@5 + citation validity',
     icon: Database,
   },
   {
-    week: '03',
+    module: '03',
     title: 'Reason',
     body: 'A bounded investigator calls deterministic tools and returns three ranked, cited hypotheses.',
     proof: 'Top-cause accuracy + tool contract',
     icon: BrainCircuit,
   },
   {
-    week: '04',
+    module: '04',
     title: 'Evaluate',
     body: 'A nightly OCI timer replays 70 cases and publishes quality, latency and safety evidence.',
     proof: 'Regression gates + OTel traces',
@@ -327,24 +327,24 @@ export function CloudLab() {
         </div>
       </section>
 
-      <section className="cloud-week-section">
+      <section className="cloud-module-section">
         <header>
-          <span>WEEKS 1–4 · DEMONSTRABLE OUTCOMES</span>
+          <span>PRODUCT CAPABILITIES · DEMONSTRABLE OUTCOMES</span>
           <h2>One product story, four measurable layers.</h2>
         </header>
-        <div className="cloud-week-grid">
-          {weeks.map((week) => {
-            const Icon = week.icon;
+        <div className="cloud-module-grid">
+          {modules.map((module) => {
+            const Icon = module.icon;
             return (
-              <article key={week.week}>
+              <article key={module.module}>
                 <div>
-                  <b>{week.week}</b>
+                  <b>{module.module}</b>
                   <Icon />
                 </div>
-                <h3>{week.title}</h3>
-                <p>{week.body}</p>
+                <h3>{module.title}</h3>
+                <p>{module.body}</p>
                 <span>
-                  <CheckCircle2 /> {week.proof}
+                  <CheckCircle2 /> {module.proof}
                 </span>
               </article>
             );

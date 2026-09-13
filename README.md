@@ -52,7 +52,7 @@ The public experience follows one incident from physical infrastructure to a rev
 The dashboard provides:
 
 - Narrative product homepage with an animated rack-to-evidence signal journey
-- Five-week interactive product lab spanning Redfish, RAG, agents, evaluation, and model specialization
+- Modular interactive product lab spanning Redfish, RAG, agents, evaluation, and model specialization
 - Filterable map of 12 Redfish read, event, and guarded-action capabilities
 - Filterable 3D digital twin spanning data center, data hall, row, and rack views
 - Interactive four-rack floor with 32 nodes and 256 simulated GPUs
@@ -64,9 +64,9 @@ The dashboard provides:
 - Dedicated `/ai-observability` workspace for LangSmith-shaped traces, nested
   runs, tool latency, token cost, RAG quality, online evaluations, safety gates,
   and Redfish-to-AI incident correlation
-- Interactive five-week learning checklist that moves from Redfish collection
+- Interactive modular learning checklist that moves from Redfish collection
   through evidence/RAG, bounded agents, LangSmith evaluation, and LoRA/QLoRA
-  release gating, with a product proof link for every week
+  release gating, with a product proof link for every module
 - Downloadable, deterministic AI-observability source at
   `/data/langsmith-observability.json`, linked from every AI dashboard view
 - Persistent hosted telemetry APIs at `/api/telemetry/query` and
@@ -183,9 +183,9 @@ npm run build
 
 The unit suite additionally validates topology size, scenario isolation, safe human review, source-linked retrieval, and invalid-state handling.
 
-## Week 1–5 product map
+## Product capability map
 
-| Week | Operator product        | Core technology                                | Release evidence                    |
+| Module | Operator product        | Core technology                                | Release evidence                    |
 | ---- | ----------------------- | ---------------------------------------------- | ----------------------------------- |
 | 1    | Redfish Capability Map  | DMTF resources, discovery, GET-only collection | Schema coverage and safe access     |
 | 2    | Cited Incident Timeline | Hybrid RAG and structured evidence retrieval   | Every claim resolves to evidence    |

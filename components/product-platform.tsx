@@ -32,21 +32,21 @@ import {
   INCIDENTS,
   REDFISH_CAPABILITIES,
   SOURCES,
-  WEEKS,
-  type WeekKey,
+  MODULES,
+  type ModuleKey,
 } from '@/lib/platform-data';
 
 const filters = ['All', 'Read', 'Event', 'Guarded'] as const;
 
 export function ProductPlatform() {
-  const [week, setWeek] = useState<WeekKey>(1);
+  const [module, setModule] = useState<ModuleKey>(1);
   const [capabilityFilter, setCapabilityFilter] =
     useState<(typeof filters)[number]>('All');
   const [selectedCapability, setSelectedCapability] = useState('Systems');
   const [incidentId, setIncidentId] =
     useState<(typeof INCIDENTS)[number]['id']>('firmware');
   const [replayCount, setReplayCount] = useState(0);
-  const activeWeek = WEEKS.find((item) => item.id === week) ?? WEEKS[0];
+  const activeModule = MODULES.find((item) => item.id === module) ?? MODULES[0];
   const incident =
     INCIDENTS.find((item) => item.id === incidentId) ?? INCIDENTS[0];
   const capability =
@@ -83,7 +83,7 @@ export function ProductPlatform() {
           </p>
           <div className="platform-hero-actions">
             <a href="#roadmap">
-              Explore the five-week system <ArrowRight />
+              Explore the modular system <ArrowRight />
             </a>
             <a href="/studio">
               Open the 3D twin <ChevronRight />
@@ -151,26 +151,26 @@ export function ProductPlatform() {
       <section className="platform-section" id="roadmap">
         <div className="platform-section-heading">
           <div>
-            <span>WEEK 1 → WEEK 5</span>
+            <span>PRODUCT CAPABILITIES</span>
             <h2>One product, built in trust layers.</h2>
           </div>
           <p>
-            Each week adds an operator-visible capability and a measurable
+            Each module adds an operator-visible capability and a measurable
             release gate.
           </p>
         </div>
         <div
-          className="week-rail"
+          className="module-rail"
           role="tablist"
-          aria-label="Five-week product roadmap"
+          aria-label="Modular product roadmap"
         >
-          {WEEKS.map((item) => (
+          {MODULES.map((item) => (
             <button
               key={item.id}
               role="tab"
-              aria-selected={week === item.id}
-              onClick={() => setWeek(item.id)}
-              className={week === item.id ? 'active' : ''}
+              aria-selected={module === item.id}
+              onClick={() => setModule(item.id)}
+              className={module === item.id ? 'active' : ''}
             >
               <b>0{item.id}</b>
               <span>{item.name}</span>
@@ -178,17 +178,17 @@ export function ProductPlatform() {
             </button>
           ))}
         </div>
-        <div className="week-detail">
-          <div className="week-number">0{activeWeek.id}</div>
+        <div className="module-detail">
+          <div className="module-number">0{activeModule.id}</div>
           <div>
             <span>PRODUCT MODULE</span>
-            <h3>{activeWeek.product}</h3>
-            <p>{activeWeek.outcome}</p>
+            <h3>{activeModule.product}</h3>
+            <p>{activeModule.outcome}</p>
           </div>
-          <div className="week-technology">
+          <div className="module-technology">
             <Cpu />
             <span>TECHNOLOGY</span>
-            <strong>{activeWeek.technology}</strong>
+            <strong>{activeModule.technology}</strong>
           </div>
         </div>
       </section>
@@ -196,7 +196,7 @@ export function ProductPlatform() {
       <section className="platform-section capability-section">
         <div className="platform-section-heading">
           <div>
-            <span>WEEK 1 · CAPABILITY EXPLORER</span>
+            <span>CAPABILITY EXPLORER</span>
             <h2>Redfish, translated into operations.</h2>
           </div>
           <p>
@@ -264,7 +264,7 @@ export function ProductPlatform() {
       <section className="platform-section replay-section">
         <div className="platform-section-heading">
           <div>
-            <span>WEEKS 2–4 · INCIDENT REPLAY</span>
+            <span>INCIDENT REPLAY</span>
             <h2>A fault becomes an evidence graph.</h2>
           </div>
           <p>
@@ -361,7 +361,7 @@ export function ProductPlatform() {
       <section className="platform-section trust-section">
         <div className="platform-section-heading">
           <div>
-            <span>WEEK 4 · EVALUATION</span>
+            <span>EVALUATION</span>
             <h2>The AI has to earn deployment.</h2>
           </div>
           <p>
@@ -424,7 +424,7 @@ export function ProductPlatform() {
       <section className="platform-section model-section">
         <div className="platform-section-heading">
           <div>
-            <span>WEEK 5 · MODEL OPS</span>
+            <span>MODEL OPS</span>
             <h2>Fine-tuning with a real quality gate.</h2>
           </div>
           <p>

@@ -61,9 +61,9 @@ const views = [
   'Correlations',
 ] as const;
 
-const learningWeeks = [
+const learningModules = [
   {
-    week: 'Week 1',
+    module: 'Module 1',
     phase: 'Instrument',
     title: 'Redfish foundations',
     outcome: 'Explain how each hardware signal reaches the dashboard.',
@@ -77,7 +77,7 @@ const learningWeeks = [
     ],
   },
   {
-    week: 'Week 2',
+    module: 'Module 2',
     phase: 'Contextualize',
     title: 'Evidence and RAG',
     outcome: 'Turn raw sensor changes into a cited incident timeline.',
@@ -91,7 +91,7 @@ const learningWeeks = [
     ],
   },
   {
-    week: 'Week 3',
+    module: 'Module 3',
     phase: 'Reason',
     title: 'Reliability agent',
     outcome: 'Trace a bounded investigation from tools to human review.',
@@ -105,7 +105,7 @@ const learningWeeks = [
     ],
   },
   {
-    week: 'Week 4',
+    module: 'Module 4',
     phase: 'Evaluate',
     title: 'LangSmith observability',
     outcome: 'Measure whether the AI is useful, fast and affordable.',
@@ -119,7 +119,7 @@ const learningWeeks = [
     ],
   },
   {
-    week: 'Week 5',
+    module: 'Module 5',
     phase: 'Adapt',
     title: 'LoRA and QLoRA',
     outcome: 'Specialize only after reviewed data clears release gates.',
@@ -381,8 +381,8 @@ export function LangSmithObservabilityDashboard() {
     (langsmithData.traces.filter((trace) => trace.status !== 'error').length /
       langsmithData.traces.length) *
     100;
-  const totalLessons = learningWeeks.reduce(
-    (sum, week) => sum + week.tasks.length,
+  const totalLessons = learningModules.reduce(
+    (sum, module) => sum + module.tasks.length,
     0,
   );
   const learningProgress = Math.round(
@@ -675,7 +675,7 @@ export function LangSmithObservabilityDashboard() {
           <span>
             <BookOpenCheck /> LEARNING MODE
           </span>
-          <strong>Five-week RackLens checklist</strong>
+          <strong>Modular RackLens checklist</strong>
           <small>
             {completedLessons.size}/{totalLessons} labs complete
           </small>
@@ -686,7 +686,7 @@ export function LangSmithObservabilityDashboard() {
               <span>
                 <BookOpenCheck /> BUILD &amp; LEARN
               </span>
-              <h2>Five-week RackLens learning checklist</h2>
+              <h2>Modular RackLens learning checklist</h2>
               <p>
                 Complete each lab against the telemetry, traces and evaluation
                 evidence in this product.
@@ -708,23 +708,23 @@ export function LangSmithObservabilityDashboard() {
               </button>
             </div>
           </header>
-          <div className="ls-week-grid">
-            {learningWeeks.map((week, weekIndex) => {
-              const weekDone = week.tasks.filter((_, taskIndex) =>
-                completedLessons.has(`${weekIndex}-${taskIndex}`),
+          <div className="ls-module-grid">
+            {learningModules.map((module, moduleIndex) => {
+              const moduleDone = module.tasks.filter((_, taskIndex) =>
+                completedLessons.has(`${moduleIndex}-${taskIndex}`),
               ).length;
               return (
-                <article key={week.week}>
-                  <div className="ls-week-heading">
-                    <span>{week.week}</span>
-                    <b>{week.phase}</b>
-                    <strong>{weekDone}/4</strong>
+                <article key={module.module}>
+                  <div className="ls-module-heading">
+                    <span>{module.module}</span>
+                    <b>{module.phase}</b>
+                    <strong>{moduleDone}/4</strong>
                   </div>
-                  <h3>{week.title}</h3>
-                  <p>{week.outcome}</p>
-                  <div className="ls-week-tasks">
-                    {week.tasks.map((task, taskIndex) => {
-                      const lessonId = `${weekIndex}-${taskIndex}`;
+                  <h3>{module.title}</h3>
+                  <p>{module.outcome}</p>
+                  <div className="ls-module-tasks">
+                    {module.tasks.map((task, taskIndex) => {
+                      const lessonId = `${moduleIndex}-${taskIndex}`;
                       const checked = completedLessons.has(lessonId);
                       return (
                         <label key={task} className={checked ? 'complete' : ''}>
@@ -739,7 +739,7 @@ export function LangSmithObservabilityDashboard() {
                       );
                     })}
                   </div>
-                  <a href={week.href}>{week.proof} →</a>
+                  <a href={module.href}>{module.proof} →</a>
                 </article>
               );
             })}

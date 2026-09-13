@@ -39,7 +39,7 @@ const labItems = [
   {
     href: '/platform',
     label: 'Product Lab',
-    description: 'Explore the five-week learning path',
+    description: 'Explore the modular learning path',
   },
   {
     href: '/cloud-lab',
